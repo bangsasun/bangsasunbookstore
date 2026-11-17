@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="여섯 가지 질문에 답하면 지금 마음에 꼭 맞는 한국 책을 골라 주는 작은 서점">
+<meta property="og:title" content="오늘의 한 권 — 작은 서점의 책 처방">
+<meta property="og:description" content="여섯 가지 질문에 답하면 지금 마음에 꼭 맞는 책을 골라 드려요.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f6eedf">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>오늘의 한 권 — 작은 서점의 책 처방</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --paper:#f6eedf;
+    --paper-2:#efe3cc;
+    --card:#fffaf1;
+    --ink:#3b2a1e;
+    --ink-soft:#6e5644;
+    --wood:#8a5a3b;
+    --wood-dark:#5e3b25;
+    --accent:#c7743d;
+    --accent-soft:#f1d7b8;
+    --line:#e2d2b8;
+    --shadow:0 10px 30px rgba(94,59,37,.14);
+    --serif:'Gowun Batang', 'Nanum Myeongjo', serif;
+    --sans:'Noto Sans KR', system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fff6e6 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #ecd8b8 0%, transparent 55%),
+      var(--paper);
+    min-height:100vh;
+    display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* subtle paper grain */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+    background-image:radial-gradient(rgba(94,59,37,.08) 1px, transparent 1px);
+    background-size:3px 3px;
+  }
+  .app{
+    position:relative;width:100%;max-width:560px;
+    padding:28px 20px 40px;
+    display:flex;flex-direction:column;min-height:100vh;
+  }
+  .brand{
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--serif);font-size:15px;color:var(--wood);
+    letter-spacing:.02em;margin-bottom:18px;
+  }
+  .brand .lamp{font-size:18px}
+
+  /* ---------- screens & transitions ---------- */
+  .screen{display:none;flex:1;flex-direction:column}
+  .screen.active{display:flex;animation:enter .55s cubic-bezier(.2,.7,.2,1) both}
+  .screen.leaving{display:flex;animation:leave .3s ease both}
+  @keyframes enter{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes leave{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-12px)}}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:var(--sans);font-weight:700;font-size:16px;
+    border:none;border-radius:999px;cursor:pointer;
+    padding:16px 28px;
+    background:linear-gradient(180deg,var(--wood) 0%, var(--wood-dark) 100%);
+    color:#fff8ec;box-shadow:0 6px 16px rgba(94,59,37,.28), inset 0 1px 0 rgba(255,255,255,.18);
+    transition:transform .18s ease, box-shadow .25s ease, filter .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(94,59,37,.32)}
+  .btn:active{transform:translateY(1px) scale(.98);box-shadow:0 3px 8px rgba(94,59,37,.25)}
+  .btn.ghost{
+    background:transparent;color:var(--wood-dark);
+    box-shadow:inset 0 0 0 1.5px var(--line);
+  }
+  .btn.ghost:hover{background:rgba(255,250,241,.7)}
+
+  /* ---------- start ---------- */
+  .hero{
+    flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;
+    padding:10px 4px 30px;
+  }
+  .shelf{
+    display:flex;align-items:flex-end;justify-content:center;gap:5px;
+    height:120px;margin:0 auto 26px;padding:0 18px;
+    border-bottom:10px solid var(--wood);
+    border-radius:2px;position:relative;
+  }
+  .shelf::after{
+    content:"";position:absolute;left:-6px;right:-6px;bottom:-16px;height:6px;
+    background:var(--wood-dark);border-radius:0 0 4px 4px;opacity:.6;
+  }
+  .spine{
+    width:22px;border-radius:3px 3px 0 0;
+    box-shadow:inset -3px 0 0 rgba(0,0,0,.12), inset 2px 0 0 rgba(255,255,255,.15);
+    transform-origin:bottom center;
+    animation:sway 4s ease-in-out infinite;
+  }
+  .spine::before{content:"";display:block;height:6px;margin:12px 4px 0;border-top:2px solid rgba(255,255,255,.45);border-bottom:2px solid rgba(255,255,255,.45)}
+  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-1.5deg)}}
+  .hero h1{
+    font-family:var(--serif);font-weight:700;
+    font-size:clamp(30px,8vw,40px);line-height:1.3;letter-spacing:-.01em;
+    margin-bottom:14px;
+  }
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{
+    color:var(--ink-soft);font-size:16px;line-height:1.75;margin:0 auto 32px;max-width:360px;
+  }
+  .hero .btn{align-self:center;min-width:200px}
+  .hero .meta{margin-top:16px;font-size:13px;color:#a08670}
+
+  /* ---------- quiz ---------- */
+  .progress-wrap{margin-bottom:28px}
+  .progress-top{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:14px;color:var(--ink-soft);margin-bottom:10px;
+  }
+  .back{
+    background:none;border:none;color:var(--wood);font-size:14px;cursor:pointer;
+    padding:6px 2px;font-family:var(--sans);transition:opacity .2s;
+  }
+  .back:disabled{opacity:0;pointer-events:none}
+  .progress{
+    height:10px;background:var(--paper-2);border-radius:999px;overflow:hidden;
+    box-shadow:inset 0 1px 2px rgba(94,59,37,.12);
+  }
+  .progress-bar{
+    height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,#e0a46c,var(--accent));
+    transition:width .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+  .dots span{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s, transform .3s}
+  .dots span.done{background:var(--accent)}
+  .dots span.now{background:var(--wood);transform:scale(1.4)}
+
+  .q-box{animation:enter .45s cubic-bezier(.2,.7,.2,1) both}
+  .q-box.out{animation:qout .25s ease both}
+  @keyframes qout{to{opacity:0;transform:translateX(-24px)}}
+  .q-label{font-family:var(--serif);color:var(--accent);font-size:15px;margin-bottom:8px}
+  .q-title{font-family:var(--serif);font-size:clamp(23px,6vw,28px);line-height:1.45;margin-bottom:24px;font-weight:700}
+  .options{display:grid;gap:12px}
+  .option{
+    display:flex;align-items:center;gap:14px;
+    text-align:left;width:100%;
+    background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:17px 18px;cursor:pointer;
+    font-family:var(--sans);font-size:16px;color:var(--ink);
+    box-shadow:0 2px 0 rgba(94,59,37,.05);
+    transition:transform .2s ease, border-color .2s, background .25s, box-shadow .25s;
+    -webkit-tap-highlight-color:transparent;
+    opacity:0;animation:pop .45s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .option:hover{border-color:#d6b48f;transform:translateY(-2px);box-shadow:0 8px 18px rgba(94,59,37,.1)}
+  .option:active{transform:scale(.98)}
+  .option.selected{border-color:var(--accent);background:#fdf0e1;box-shadow:0 0 0 3px rgba(199,116,61,.18)}
+  .option .emo{font-size:22px;width:30px;text-align:center;flex-shrink:0}
+  .option .txt b{display:block;font-weight:700}
+  .opt-group{margin-bottom:18px;opacity:0;animation:pop .45s cubic-bezier(.2,.7,.2,1) forwards}
+  .og-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 2px 10px}
+  .og-head b{font-family:var(--serif);font-size:16px;color:var(--wood-dark)}
+  .og-head small{font-size:12.5px;color:#a08670}
+  .options.tiles{grid-template-columns:repeat(3,1fr);gap:10px}
+  .option.tile{
+    flex-direction:column;justify-content:center;gap:4px;text-align:center;
+    padding:16px 6px 14px;min-height:118px;
+  }
+  .option.tile .emo{font-size:26px;width:auto;margin-bottom:2px}
+  .option.tile b{font-size:15px;line-height:1.3;word-break:keep-all}
+  .option.tile small{font-size:11.5px;color:#9a8270;line-height:1.35;word-break:keep-all}
+  .option .txt small{display:block;color:#9a8270;font-size:13px;margin-top:2px}
+
+  /* ---------- result ---------- */
+  .r-head{text-align:center;margin-bottom:22px}
+  .r-head .kicker{font-family:var(--serif);color:var(--accent);font-size:15px;margin-bottom:6px}
+  .r-head h2{font-family:var(--serif);font-size:clamp(24px,6.5vw,30px);line-height:1.4}
+  .r-head .you{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .chip{
+    font-size:12.5px;padding:5px 11px;border-radius:999px;
+    background:var(--accent-soft);color:var(--wood-dark);
+  }
+  .book{
+    background:var(--card);border-radius:20px;border:1px solid var(--line);
+    box-shadow:var(--shadow);padding:20px;margin-bottom:16px;
+    display:flex;gap:18px;align-items:flex-start;
+    opacity:0;animation:pop .6s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .book.main{flex-direction:column;align-items:center;text-align:center;padding:28px 22px 24px;position:relative}
+  .badge{
+    position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    background:var(--accent);color:#fff;font-size:12.5px;font-weight:700;
+    padding:6px 14px;border-radius:999px;box-shadow:0 4px 10px rgba(199,116,61,.35);white-space:nowrap;
+  }
+  .cover{
+    flex-shrink:0;width:78px;height:112px;border-radius:4px 8px 8px 4px;
+    position:relative;overflow:hidden;
+    box-shadow:6px 8px 16px rgba(60,35,20,.25), inset 6px 0 0 rgba(0,0,0,.14);
+    display:flex;align-items:center;justify-content:center;padding:10px 8px 10px 14px;
+    color:#fffaf0;font-family:var(--serif);font-weight:700;font-size:11px;line-height:1.35;text-align:center;
+    word-break:keep-all;
+  }
+  .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.22),transparent 45%)}
+  .cover .ca{position:absolute;bottom:8px;left:14px;right:8px;font-size:9px;font-weight:400;opacity:.85}
+  .book.main .cover{width:130px;height:188px;font-size:16px;margin-bottom:20px;padding:16px 12px 16px 22px}
+  .book.main .cover .ca{font-size:11px;bottom:14px;left:22px}
+  .b-info{flex:1;min-width:0}
+  .b-title{font-family:var(--serif);font-size:18px;font-weight:700;line-height:1.4}
+  .book.main .b-title{font-size:23px}
+  .b-author{font-size:14px;color:var(--ink-soft);margin:4px 0 10px}
+  .b-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+  .book.main .b-tags{justify-content:center}
+  .b-tags span{font-size:11.5px;color:var(--wood);border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:#fff}
+  .b-desc{font-size:14.5px;line-height:1.75;color:var(--ink);word-break:keep-all}
+  .book.main .b-desc{text-align:left;font-size:15px}
+  .b-why{
+    margin-top:12px;padding:12px 14px;border-radius:12px;
+    background:#f8ecda;font-size:14px;line-height:1.65;color:var(--wood-dark);text-align:left;
+  }
+  .b-why b{display:block;font-size:12.5px;color:var(--accent);margin-bottom:3px}
+  .life{
+    margin-top:22px;padding:22px 20px;border-radius:20px;
+    background:linear-gradient(180deg,#fbf2e3,#f5e6cf);
+    border:1.5px dashed #d9bd98;
+    opacity:0;animation:pop .6s cubic-bezier(.2,.7,.2,1) .7s forwards;
+  }
+  .life-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+  .life-ico{font-size:26px;line-height:1}
+  .life h3{font-family:var(--serif);font-size:19px;margin-bottom:4px}
+  .life p{font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+  .life p b{color:var(--accent)}
+  #lifeForm{display:grid;gap:10px}
+  #lifeForm input, #lifeForm textarea{
+    width:100%;font-family:var(--sans);font-size:16px;color:var(--ink);
+    background:var(--card);border:1.5px solid var(--line);border-radius:12px;
+    padding:13px 14px;resize:none;outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  #lifeForm input:focus, #lifeForm textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,116,61,.15)}
+  #lifeForm .btn{justify-self:center;margin-top:4px;padding:13px 26px;font-size:15px}
+  .life.done #lifeForm{display:none}
+  #lifeForm input.shake{border-color:#d0674a;animation:shake .4s ease}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .life-thanks{display:none;text-align:center;font-family:var(--serif);font-size:16px;line-height:1.6;color:var(--wood-dark);padding:4px 0 2px}
+  .life.done .life-thanks{display:block;animation:enter .5s ease both}
+  .life-list{margin-top:14px;display:grid;gap:8px}
+  .life-list:empty{display:none}
+  .life-list .lt{font-size:12.5px;color:#a08670;margin-bottom:2px}
+  .life-item{
+    background:var(--card);border-radius:12px;padding:11px 14px;border-left:4px solid var(--accent);
+    font-size:14px;line-height:1.55;animation:pop .4s ease both;
+  }
+  .life-item b{font-family:var(--serif)}
+  .life-item span{color:var(--ink-soft)}
+  .life-item q{display:block;margin-top:3px;color:var(--wood-dark);quotes:"“" "”"}
+  .life-again{display:block;margin:10px auto 0;background:none;border:none;color:var(--wood);font-size:13.5px;text-decoration:underline;cursor:pointer;font-family:var(--sans)}
+
+  /* ---------- 읽고 싶은 책 ---------- */
+  .book{position:relative}
+  .book:not(.main) .b-title{padding-right:38px}
+  .heart{
+    position:absolute;top:14px;right:14px;z-index:2;
+    width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);
+    background:#fff;cursor:pointer;font-size:18px;line-height:1;color:#c9b29a;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s ease, background .25s, border-color .25s, color .25s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .heart:active{transform:scale(.88)}
+  .heart.on{background:#fdecea;border-color:#e59a8f;color:#d4574a}
+  .heart.bump{animation:bump .45s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+  .heart-label{position:absolute;top:58px;right:8px;font-size:10.5px;color:#a08670;white-space:nowrap}
+
+  .wish-fab{
+    position:fixed;top:18px;right:74px;z-index:10;
+    width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);
+    background:rgba(255,250,241,.9);backdrop-filter:blur(6px);
+    font-size:19px;cursor:pointer;box-shadow:0 4px 12px rgba(94,59,37,.15);
+    transition:transform .2s ease;-webkit-tap-highlight-color:transparent;
+  }
+  .wish-fab:active{transform:scale(.92)}
+  .wish-fab.bump{animation:bump .45s cubic-bezier(.3,1.6,.5,1)}
+  .wish-count{
+    position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;
+    border-radius:999px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-family:var(--sans);
+    transform:scale(0);transition:transform .25s cubic-bezier(.3,1.6,.5,1);
+  }
+  .wish-count.show{transform:scale(1)}
+
+  .sheet-bg{position:fixed;inset:0;z-index:20;background:rgba(59,42,30,.35);opacity:0;pointer-events:none;transition:opacity .3s}
+  .sheet-bg.open{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:50%;bottom:0;z-index:21;width:100%;max-width:560px;max-height:78vh;
+    transform:translate(-50%,105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);
+    background:var(--paper);border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(59,42,30,.2);
+    display:flex;flex-direction:column;padding:10px 18px 24px;
+  }
+  .sheet.open{transform:translate(-50%,0)}
+  .sheet-grip{width:42px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .sheet-head h3{font-family:var(--serif);font-size:19px}
+  .sheet-close{background:none;border:none;font-size:18px;color:var(--ink-soft);cursor:pointer;padding:6px 8px}
+  .wish-list{overflow-y:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-bottom:6px}
+  .wish-empty{text-align:center;color:var(--ink-soft);font-size:14.5px;line-height:1.7;padding:26px 10px}
+  .wish-item{
+    display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px;animation:pop .35s ease both;
+  }
+  .wish-item.out{animation:qout .25s ease both}
+  .wish-item .cover{width:46px;height:66px;font-size:8px;padding:6px 4px 6px 9px;box-shadow:3px 4px 8px rgba(60,35,20,.2), inset 4px 0 0 rgba(0,0,0,.14)}
+  .wish-item .cover .ca{display:none}
+  .wish-item .wi{flex:1;min-width:0}
+  .wish-item .wi b{font-family:var(--serif);font-size:15.5px;display:block;line-height:1.4}
+  .wish-item .wi span{font-size:13px;color:var(--ink-soft)}
+  .wish-item .wi small{display:block;font-size:12.5px;color:#9a8270;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wish-del{background:none;border:none;color:#b8a08a;font-size:13px;cursor:pointer;padding:8px;flex-shrink:0;font-family:var(--sans)}
+  .wish-del:hover{color:#d4574a}
+
+  .sub-title{font-family:var(--serif);font-size:17px;margin:14px 4px 12px;color:var(--wood-dark)}
+  .r-actions{display:flex;justify-content:center;margin-top:16px}
+  .r-actions .btn{min-width:200px}
+
+  /* ---------- BGM ---------- */
+  .bgm{
+    position:fixed;top:18px;right:18px;z-index:10;
+    width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);
+    background:rgba(255,250,241,.9);backdrop-filter:blur(6px);
+    color:var(--wood-dark);font-size:19px;cursor:pointer;
+    box-shadow:0 4px 12px rgba(94,59,37,.15);
+    transition:transform .2s ease, background .3s, color .3s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .bgm:active{transform:scale(.92)}
+  .bgm.on{background:var(--wood);color:#fff8ec;border-color:var(--wood);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(138,90,59,.35)}50%{box-shadow:0 0 0 8px rgba(138,90,59,0)}}
+  .bgm-tip{
+    position:fixed;top:72px;right:18px;z-index:10;max-width:220px;
+    background:var(--ink);color:#fff8ec;font-size:12.5px;line-height:1.5;
+    padding:9px 12px;border-radius:10px;opacity:0;transform:translateY(-6px);
+    pointer-events:none;transition:opacity .3s, transform .3s;
+  }
+  .bgm-tip.show{opacity:1;transform:none}
+  .snow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 2s ease}
+  .snow.on{opacity:1}
+  .flake{
+    position:absolute;top:-20px;border-radius:50%;
+    background:#fff;box-shadow:0 0 6px rgba(160,180,200,.9);
+    animation:fall linear infinite;
+  }
+  @keyframes fall{
+    0%{transform:translate(0,-20px)}
+    50%{transform:translate(22px,50vh)}
+    100%{transform:translate(-8px,105vh)}
+  }
+  .app > *:not(.snow){position:relative;z-index:1}
+  .app > .bgm, .app > .bgm-tip, .app > .wish-fab{position:fixed;z-index:10}
+  .app > .sheet-bg{position:fixed;z-index:20}
+  .app > .sheet{position:fixed;z-index:21}
+
+  .footer{text-align:center;font-size:12px;color:#a99079;margin-top:26px}
+
+  @media (max-width:380px){
+    .app{padding:22px 16px 32px}
+    .book{padding:16px;gap:14px}
+    .cover{width:66px;height:96px;font-size:10px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><span class="lamp">🕯️</span> 골목 끝 작은 서점</div>
+
+  <!-- 배경음악: 브라우저에서 직접 연주하는 자작곡 「모닥불 곁의 서점」 -->
+  <button class="wish-fab" id="wishFab" aria-label="읽고 싶은 책 보기" title="읽고 싶은 책">🧺<span class="wish-count" id="wishCount">0</span></button>
+  <div class="sheet-bg" id="sheetBg"></div>
+  <aside class="sheet" id="sheet" aria-label="읽고 싶은 책">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h3>🧺 읽고 싶은 책</h3>
+      <button class="sheet-close" id="sheetClose" aria-label="닫기">✕</button>
+    </div>
+    <div class="wish-list" id="wishList"></div>
+  </aside>
+  <button class="bgm" id="bgmBtn" aria-label="배경음악 켜기/끄기" title="배경음악">♪</button>
+  <div class="bgm-tip" id="bgmTip"></div>
+  <div class="snow" id="snow" aria-hidden="true"></div>
+
+  <!-- 시작 화면 -->
+  <section class="screen active" id="start">
+    <div class="hero">
+      <div class="shelf" id="shelf"></div>
+      <h1>오늘 당신에게<br><em>꼭 맞는 한 권</em></h1>
+      <p>따뜻한 차 한 잔 옆에 두고, 여섯 가지 질문에 답해 주세요.<br>지금 마음에 어울리는 책을 서가에서 골라 드릴게요.</p>
+      <button class="btn" id="startBtn">시작하기</button>
+      <div class="meta">약 1분 · 질문 6개</div>
+    </div>
+  </section>
+
+  <!-- 질문 화면 -->
+  <section class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <button class="back" id="backBtn">← 이전</button>
+        <span id="qCount">1 / 6</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="bar"></div></div>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div id="qArea"></div>
+  </section>
+
+  <!-- 결과 화면 -->
+  <section class="screen" id="result">
+    <div class="r-head">
+      <div class="kicker">서점 주인의 추천</div>
+      <h2>당신을 위한 오늘의 책</h2>
+      <div class="you" id="youChips"></div>
+    </div>
+    <div id="mainBook"></div>
+    <div class="sub-title">이 책도 함께 꽂아 두었어요</div>
+    <div id="subBooks"></div>
+
+    <!-- 사용자의 인생 책 -->
+    <section class="life">
+      <div class="life-head">
+        <span class="life-ico">📮</span>
+        <div>
+          <h3>이번엔 당신 차례예요</h3>
+          <p>사용자님이 추천하고 싶은 <b>인생 책</b>은 무엇인가요?</p>
+        </div>
+      </div>
+      <div id="lifeForm">
+        <input id="lifeTitle" type="text" placeholder="책 제목" maxlength="60" autocomplete="off">
+        <input id="lifeAuthor" type="text" placeholder="저자 (선택)" maxlength="40" autocomplete="off">
+        <textarea id="lifeWhy" rows="3" placeholder="이 책이 인생 책인 이유를 한두 줄로 들려주세요 (선택)" maxlength="200"></textarea>
+        <button class="btn" type="button" id="lifeSubmit">서가에 꽂기</button>
+      </div>
+      <div class="life-thanks" id="lifeThanks"></div>
+      <div class="life-list" id="lifeList"></div>
+    </section>
+
+    <div class="r-actions"><button class="btn" id="retryBtn">다시 하기</button></div>
+  </section>
+
+  <div class="footer">책 소개는 간단한 요약이에요 · 마음에 드는 책은 가까운 서점에서 만나 보세요</div>
+</div>
+
+<script>
+/* ===================== 책 목록 (실제 한국어 도서) =====================
+   genre: novel / essay / self / sci / romance / mystery
+   mood : tired / excited / bored / thinking
+   vibe : warm / tense / dreamy / real
+   len  : light(짧게 읽기 좋음) / deep(긴 호흡)
+   want : comfort / immersion / insight / motivation
+   style: easy / poetic / fast / logical                                  */
+const BOOKS = [
+  {t:'불편한 편의점', a:'김호연', genre:'novel', mood:['tired','bored'], vibe:['warm','real'], len:'light', want:['comfort'], style:'easy', c:'#4f7a6a',
+   d:'서울 청파동 골목의 작은 편의점 사장 염 여사는 잃어버린 지갑을 찾아 준 서울역 노숙인 독고에게 야간 알바를 맡겨요. 기억을 잃은 듯 말이 어눌한 이 덩치 큰 사내가 알바생, 대화 없는 가장, 슬럼프에 빠진 작가 같은 손님들의 사연에 서툴게 끼어들면서 저마다의 하루가 조금씩 달라져요. 에피소드마다 화자가 바뀌어서 짧게 끊어 읽기 좋고, 끝으로 갈수록 독고의 정체도 드러나요.'},
+  {t:'어서 오세요, 휴남동 서점입니다', a:'황보름', genre:'novel', mood:['tired','thinking'], vibe:['warm','real'], len:'light', want:['comfort'], style:'easy', c:'#a86b4a',
+   d:'번아웃으로 회사를 그만둔 영주가 서울 주택가 휴남동에 작은 동네 서점을 열어요. 바리스타 민준, 커피 로스터 지미, 공부에 지친 고등학생 민철이 드나들면서 각자 놓쳤던 삶의 균형을 천천히 되찾아 가요. 큰 사건 없이 책 이야기와 일상의 대화로 흘러가서, 정말 서점 한구석에 앉아 있는 기분이 드는 소설이에요.'},
+  {t:'달러구트 꿈 백화점', a:'이미예', genre:'novel', mood:['excited','bored'], vibe:['dreamy','warm'], len:'light', want:['comfort','immersion'], style:'easy', c:'#3e4f86',
+   d:'잠든 사람만 들어갈 수 있는 마을에 꿈을 층별로 파는 백화점이 있어요. 신입 직원 페니가 주인 달러구트 밑에서 일하며 하늘을 나는 꿈, 세상을 떠난 사람을 다시 만나는 꿈 같은 꿈들을 손님에게 건네요. 꿈값은 꿈을 꾼 뒤 느낀 설렘이나 그리움 같은 감정으로 받는다는 설정이 재미있고, 에피소드가 동화처럼 이어져요.'},
+  {t:'아몬드', a:'손원평', genre:'novel', mood:['thinking','bored'], vibe:['warm','real'], len:'light', want:['immersion','insight'], style:'easy', c:'#b55a4c',
+   d:'뇌의 편도체가 작게 태어나 감정을 잘 느끼지 못하는 열여섯 살 윤재가 주인공이에요. 생일날 묻지마 사건으로 엄마와 할머니를 잃은 뒤 혼자 남은 윤재는 거친 소년 곤이, 달리기를 좋아하는 도라를 만나며 처음으로 마음이 움직이는 경험을 해요. 짧은 장으로 빠르게 읽히면서도 공감이란 무엇인지 오래 생각하게 하는 성장 소설이에요.'},
+  {t:'지구에서 한아뿐', a:'정세랑', genre:'romance', mood:['excited'], vibe:['warm','dreamy'], len:'light', want:['comfort'], style:'easy', c:'#5c9a8f',
+   d:'헌 옷을 고쳐 새 옷으로 만드는 가게를 운영하는 한아. 유성우를 보러 캐나다에 다녀온 남자친구 경민이 어딘가 달라졌는데, 사실 그 몸에는 아주 먼 별에서 한아 하나만 보고 날아온 외계인이 들어 있어요. 황당한 설정 속에 환경과 사랑에 대한 다정한 시선이 담긴 짧고 귀여운 로맨스예요.'},
+  {t:'시선으로부터,', a:'정세랑', genre:'novel', mood:['excited','tired'], vibe:['warm'], len:'deep', want:['comfort','immersion'], style:'easy', c:'#d08a54',
+   d:'화가이자 작가였던 심시선 여사의 10주기, 가족들은 딱딱한 제사 대신 그가 젊은 시절을 보낸 하와이로 떠나요. 각자 하와이에서 가장 기쁘거나 아름다웠던 것을 하나씩 가져와 제사상에 올리기로 하면서, 3대에 걸친 여성들의 이야기가 펼쳐져요. 장마다 시선이 생전에 남긴 글이 실려 있어 한 사람의 굴곡진 삶과 남은 가족의 오늘이 함께 그려져요.'},
+  {t:'우리가 빛의 속도로 갈 수 없다면', a:'김초엽', genre:'novel', mood:['thinking','excited'], vibe:['dreamy'], len:'light', want:['immersion','insight'], style:'poetic', c:'#2f4a6d',
+   d:'우주와 미래를 배경으로 한 SF 단편 7편이에요. 가족이 사는 행성으로 떠날 우주선을 폐쇄된 정거장에서 백 년 넘게 기다리는 노인, 도서관에 데이터로 저장된 엄마의 마음이 사라져 버린 딸 같은 인물들이 나와요. 과학적 상상력 위에 소외된 존재와 이해·연결에 대한 쓸쓸하고 다정한 감정이 얹혀 있어요.'},
+  {t:'지구 끝의 온실', a:'김초엽', genre:'novel', mood:['thinking','excited'], vibe:['dreamy','tense'], len:'deep', want:['immersion'], style:'poetic', c:'#3f6b4a',
+   d:'정체불명의 먼지 \'더스트\'로 인류 대부분이 죽은 뒤 다시 일어선 세계가 배경이에요. 식물학자 아영이 폐허 도시에서 이상하게 퍼져 나가는 덩굴식물 모스바나를 조사하다가, 더스트 시대에 숲속 공동체 프림 빌리지를 지켰던 사람들의 이야기를 따라가게 돼요. 미스터리처럼 진실이 하나씩 풀리고, 끝에는 식물과 사람이 서로를 살리는 장면이 남아요.'},
+  {t:'7년의 밤', a:'정유정', genre:'mystery', mood:['bored'], vibe:['tense','real'], len:'deep', want:['immersion'], style:'fast', c:'#2b2b33',
+   d:'댐 경비팀장으로 부임한 최현수가 어느 밤 음주운전으로 소녀를 치고, 그 사고를 감추면서 두 가족의 운명이 무너져요. 딸을 잃은 아버지 오영제의 집요한 복수가 시작되고, 7년 뒤 \'살인자의 아들\'로 살아온 현수의 아들 서원의 시점에서 그날 밤의 진실이 드러나요. 안개 낀 호수 마을의 축축한 분위기와 끝까지 놓지 못하게 하는 긴장감이 강한 장편이에요.'},
+  {t:'종의 기원', a:'정유정', genre:'mystery', mood:['bored','thinking'], vibe:['tense'], len:'deep', want:['immersion'], style:'fast', c:'#6e1f24',
+   d:'스물여섯 살 유진은 진한 피 냄새에 잠에서 깨어나 집 계단 아래에서 엄마의 시신을 발견해요. 간밤의 기억이 없는 유진이 사흘 동안 그날을 되짚어 가는데, 이야기가 유진 본인의 1인칭으로 흘러가서 독자도 점점 그의 내면 깊숙이 끌려 들어가요. \'악은 어디서 오는가\'를 정면으로 다루는 서늘한 심리 스릴러예요.'},
+  {t:'살인자의 기억법', a:'김영하', genre:'mystery', mood:['bored'], vibe:['tense','dreamy'], len:'light', want:['immersion'], style:'fast', c:'#44403c',
+   d:'젊은 시절 연쇄살인을 저지르고 시를 쓰며 숨어 살아온 70대 노인 김병수가 알츠하이머에 걸려요. 동네에 나타난 한 남자가 새로운 연쇄살인범이라고 확신한 그는 딸 은희를 지키려 하지만, 메모와 녹음에 의지하는 기억은 점점 뒤엉켜요. 짧은 단락들로 이루어져 금방 읽히고, 마지막 반전이 강하게 남는 소설이에요.'},
+  {t:'파과', a:'구병모', genre:'novel', mood:['bored','thinking'], vibe:['tense','real'], len:'deep', want:['immersion'], style:'poetic', c:'#7b2f3a',
+   d:'40여 년간 청부 살인, 이른바 \'방역\'을 해 온 60대 여성 킬러 조각이 주인공이에요. 몸이 예전 같지 않아 실수가 늘어나던 때, 자신을 치료해 준 의사의 가족에게 뜻밖의 애틋함을 느끼고, 젊은 동료 투우는 노골적인 적의를 드러내요. 액션과 긴장감 속에 늙어 감과 쓸모, 사라져 가는 것들에 대한 이야기가 섬세한 문장으로 담겨 있어요.'},
+  {t:'하얼빈', a:'김훈', genre:'novel', mood:['thinking'], vibe:['tense','real'], len:'light', want:['immersion','insight'], style:'poetic', c:'#3d3a35',
+   d:'1909년, 이토 히로부미가 하얼빈에 온다는 소식을 들은 서른 살 청년 안중근이 동료 우덕순과 함께 하얼빈으로 향해요. 영웅담보다는 가난하고 고뇌하는 한 청년의 여정과 저격 이후 재판까지를 따라가고, 이토의 시선도 교차해서 보여줘요. 김훈 특유의 짧고 단단한 문장이 무게감을 더해요.'},
+  {t:'채식주의자', a:'한강', genre:'novel', mood:['thinking'], vibe:['dreamy','real'], len:'light', want:['insight','immersion'], style:'poetic', c:'#4d6b3a',
+   d:'평범한 주부 영혜가 피투성이 꿈을 꾼 뒤 갑자기 고기를 먹지 않겠다고 선언하면서 가족과의 관계가 걷잡을 수 없이 무너져요. 「채식주의자」, 「몽고반점」, 「나무 불꽃」 세 편이 이어지는 연작으로, 남편·형부·언니의 시선으로만 영혜를 보여줘요. 폭력과 욕망, 인간이기를 거부하는 마음을 시적인 이미지로 그려 낸 작품으로, 맨부커 인터내셔널상을 받았어요.'},
+  {t:'작별하지 않는다', a:'한강', genre:'novel', mood:['thinking'], vibe:['dreamy','real'], len:'deep', want:['insight'], style:'poetic', c:'#7d8a96',
+   d:'학살에 관한 책을 쓴 뒤 악몽에 시달리던 작가 경하에게, 사고로 서울 병원에 입원한 친구 인선이 제주 집에 남겨진 새를 살려 달라고 부탁해요. 폭설을 뚫고 도착한 외딴집에서 경하는 인선의 어머니가 평생 붙들고 있던 제주 4·3의 기억과 마주해요. 꿈과 현실, 산 자와 죽은 자의 경계가 눈처럼 흐려지는 문장으로 쓰인 장편이에요.'},
+  {t:'소년이 온다', a:'한강', genre:'novel', mood:['thinking'], vibe:['real'], len:'deep', want:['insight'], style:'poetic', c:'#5a5048',
+   d:'1980년 5월 광주, 친구의 죽음을 목격한 중학생 동호는 도청 상무관에서 시신을 수습하는 일을 도와요. 여섯 개의 장이 동호와 그의 친구, 출판사 직원, 고문을 견딘 생존자, 동호의 어머니 등 서로 다른 사람의 목소리로 이어지며 그날 이후의 시간을 보여줘요. 분량은 길지 않지만 쉽게 넘어가지 않는 무게를 지닌 소설이에요.'},
+  {t:'82년생 김지영', a:'조남주', genre:'novel', mood:['thinking'], vibe:['real'], len:'light', want:['insight'], style:'easy', c:'#9c6b8e',
+   d:'1982년생 김지영 씨가 어느 날부터 친정엄마나 세상을 떠난 대학 선배처럼 말하기 시작해요. 정신과 상담 기록이라는 형식으로 그녀의 어린 시절부터 학교, 취업, 결혼, 출산과 경력 단절까지를 담담하게 되짚고, 중간중간 실제 통계와 기사가 들어가요. 특별할 것 없는 한 사람의 삶을 통해 우리 사회의 일상을 다시 보게 하는 소설이에요.'},
+  {t:'모순', a:'양귀자', genre:'novel', mood:['thinking','tired'], vibe:['real','warm'], len:'light', want:['insight'], style:'easy', c:'#b0803e',
+   d:'스물다섯 살 안진진의 엄마와 이모는 일란성 쌍둥이지만 정반대의 삶을 살아요. 엄마는 떠돌이 남편 때문에 억척스럽게 살고, 이모는 부유하지만 단조로운 삶을 살죠. 진진은 계획적이고 안정적인 남자 나영규와 낭만적인 사진작가 김장우 사이에서 자신의 삶을 선택해야 해요. 1998년에 나온 소설이지만 지금 읽어도 공감 가는 문장이 많아 꾸준히 사랑받아요.'},
+  {t:'아버지의 해방일지', a:'정지아', genre:'novel', mood:['tired','thinking'], vibe:['warm','real'], len:'light', want:['comfort','insight'], style:'easy', c:'#8a3f2c',
+   d:'"아버지가 죽었다"로 시작해요. 평생 사회주의자로 살았던 전직 빨치산 아버지가 전봇대에 머리를 박고 세상을 떠나고, 딸 아리는 구례 장례식장에서 사흘을 보내요. 동네 사람, 옛 동지, 뜻밖의 어린 조문객들이 저마다 기억하는 아버지를 들려주면서, 딸이 몰랐던 아버지의 얼굴이 하나씩 드러나요. 무거운 역사를 다루면서도 웃음이 끊이지 않는 소설이에요.'},
+  {t:'긴긴밤', a:'루리', genre:'novel', mood:['tired'], vibe:['warm','dreamy'], len:'light', want:['comfort'], style:'poetic', c:'#3c5a7a',
+   d:'코끼리들 사이에서 자란 흰바위코뿔소 노든은 인간에게 가족을 잃고 동물원에 갇혀요. 전쟁으로 동물원이 무너진 뒤 노든은 버려진 알을 지키던 펭귄 치쿠를 만나고, 그 알에서 태어난 어린 펭귄과 함께 바다를 찾아 먼 길을 떠나요. 짧은 동화지만 상실과 우정, 서로를 살게 하는 마음이 깊게 남아 어른 독자도 많이 찾는 책이에요.'},
+  {t:'하마터면 열심히 살 뻔했다', a:'하완', genre:'essay', mood:['tired'], vibe:['warm','real'], len:'light', want:['comfort'], style:'easy', c:'#e0a03a',
+   d:'마흔을 앞둔 직장인이자 일러스트레이터인 저자가 회사를 그만두고 \'열심히 살지 않기\'를 직접 실험해 본 기록이에요. 남들 기준에 맞춰 달리던 삶을 내려놓으면서 생긴 불안과 해방감을 솔직하고 유머러스하게 적었고, 직접 그린 그림이 곁들여져 있어요. 한 꼭지가 짧아서 출퇴근길에 가볍게 읽기 좋아요.'},
+  {t:'죽고 싶지만 떡볶이는 먹고 싶어', a:'백세희', genre:'essay', mood:['tired','thinking'], vibe:['real'], len:'light', want:['comfort'], style:'easy', c:'#d4574a',
+   d:'오래 가는 가벼운 우울(기분부전장애)을 앓는 저자가 정신과 상담 대화를 녹음해 대화체 그대로 옮기고, 그 뒤에 자신의 생각을 덧붙인 책이에요. 남과 끊임없이 비교하고 자신을 깎아내리는 마음을 의사와 함께 하나씩 들여다봐요. "나만 이런 게 아니구나" 하는 위로를 많은 독자에게 준 에세이예요.'},
+  {t:'언어의 온도', a:'이기주', genre:'essay', mood:['tired','thinking'], vibe:['warm'], len:'light', want:['comfort'], style:'poetic', c:'#c9875e',
+   d:'지하철, 병원, 동네 식당처럼 일상에서 우연히 듣고 본 말과 글에서 출발하는 짧은 산문 모음이에요. 무심코 던진 말이 사람을 다치게도 하고 살리기도 한다는 이야기를 작은 장면들로 보여줘요. 한 편이 몇 쪽 안 돼서 아무 데나 펼쳐 읽기 좋고, 밑줄 긋고 싶은 문장이 많아요.'},
+  {t:'운다고 달라지는 일은 아무것도 없겠지만', a:'박준', genre:'essay', mood:['tired','thinking'], vibe:['warm','dreamy'], len:'light', want:['comfort'], style:'poetic', c:'#6b7f9e',
+   d:'시집 『당신의 이름을 지어다가 며칠은 먹었다』로 사랑받은 시인 박준의 첫 산문집이에요. 사람과 이별, 가족, 여행지에서 스친 장면들을 시처럼 짧고 여백 있는 글로 적었어요. 슬픔을 억지로 위로하지 않고 곁에 가만히 있어 주는 듯한 문장들이라 지친 밤에 몇 편씩 읽기 좋아요.'},
+  {t:'보통의 언어들', a:'김이나', genre:'essay', mood:['thinking','tired'], vibe:['warm','real'], len:'light', want:['insight','comfort'], style:'easy', c:'#a4789a',
+   d:'수많은 히트곡의 가사를 쓴 작사가 김이나가 우리가 매일 쓰는 감정 단어들을 다시 정의해 보는 에세이예요. \'서운하다\', \'외롭다\', \'질투\' 같은 말에 숨은 진짜 마음을 짚어 보면서 관계와 자존감을 이야기해요. 가사를 쓰듯 정확하게 단어를 고르는 사람의 시선이라, 내 마음을 설명할 언어를 새로 얻는 느낌이 들어요.'},
+  {t:'여행의 이유', a:'김영하', genre:'essay', mood:['bored','excited','thinking'], vibe:['real'], len:'light', want:['insight'], style:'easy', c:'#4a8fa8',
+   d:'소설가 김영하가 젊은 시절 중국에서 입국을 거부당해 쫓겨난 일부터 시작해, 우리가 왜 여행을 떠나는지 아홉 편의 산문으로 풀어내요. 여행 정보가 아니라 낯선 곳에서 \'아무도 아닌 사람\'이 되는 경험, 그리고 여행과 소설 쓰기의 닮은 점을 이야기해요. 담백하면서도 위트 있는 문장이라 가볍게 시작해 생각할 거리를 많이 얻게 돼요.'},
+  {t:'아침에는 죽음을 생각하는 것이 좋다', a:'김영민', genre:'essay', mood:['thinking','bored'], vibe:['real'], len:'light', want:['insight'], style:'logical', c:'#55606e',
+   d:'서울대에서 정치사상을 가르치는 김영민 교수의 산문집이에요. 명절에 친척들이 던지는 잔소리에 대처하는 법 같은 일상의 소재부터 삶과 죽음, 공부와 사회까지 위트 있고 냉철한 문장으로 다뤄요. 웃다 보면 어느새 생각이 깊어지는 글들이라, 생각 정리가 필요할 때 읽기 좋아요.'},
+  {t:'역행자', a:'자청', genre:'self', mood:['bored','excited'], vibe:['real'], len:'light', want:['motivation'], style:'easy', c:'#1f3b57',
+   d:'외모도 학벌도 돈도 없던 저자가 경제적 자유를 얻기까지의 경험을 \'자의식 해체\', \'뇌 최적화\', \'역행자의 지식\' 같은 7단계 모델로 정리했어요. 매일 독서와 글쓰기를 하는 \'22전략\'처럼 바로 따라 해 볼 수 있는 구체적인 실천법이 많아요. 동기부여가 확 필요할 때 단숨에 읽히는 자기계발서예요.'},
+  {t:'세이노의 가르침', a:'세이노', genre:'self', mood:['thinking','bored'], vibe:['real'], len:'deep', want:['motivation'], style:'logical', c:'#2e2a24',
+   d:'큰 부를 이룬 것으로 알려진 익명의 저자 세이노가 20여 년간 인터넷에 써 온 글을 모은 책이에요. 돈 버는 법뿐 아니라 일하는 태도, 공부, 인간관계까지 듣기 좋은 말 대신 날카롭고 직설적인 조언을 해요. 900쪽이 넘는 두께라 주말에 몰아서, 또 두고두고 다시 펼쳐 보기 좋아요.'},
+  {t:'돈의 속성', a:'김승호', genre:'self', mood:['excited'], vibe:['real'], len:'light', want:['motivation','insight'], style:'logical', c:'#2f5d3a',
+   d:'글로벌 외식 기업 스노우폭스를 일군 사업가 김승호가 쓴 책이에요. 돈을 하나의 인격체처럼 대하라는 관점으로 돈을 벌고, 모으고, 지키고, 쓰는 원칙을 짧은 챕터로 정리했어요. 투자 기법보다 돈을 대하는 태도와 습관을 다뤄서 처음 재테크에 관심이 생겼을 때 읽기 좋아요.'},
+  {t:'말 그릇', a:'김윤나', genre:'self', mood:['tired','thinking'], vibe:['warm','real'], len:'light', want:['motivation','comfort'], style:'easy', c:'#8a6a4a',
+   d:'코칭 심리 전문가 김윤나가 말을 담는 마음의 크기, 곧 \'말 그릇\'에 대해 쓴 책이에요. 같은 말도 왜 누구는 상처가 되고 누구는 힘이 되는지, 감정과 말 습관, 듣는 법을 하나씩 살펴보며 내 말 그릇을 키우는 방법을 알려줘요. 사례가 많고 문장이 쉬워서 관계가 버거울 때 바로 써먹을 수 있어요.'},
+  {t:'당신이 옳다', a:'정혜신', genre:'self', mood:['tired'], vibe:['warm'], len:'light', want:['comfort','motivation'], style:'easy', c:'#c0634a',
+   d:'세월호 유가족과 고문 피해자 등 큰 상처를 입은 사람들 곁을 지켜 온 정신과 의사 정혜신의 책이에요. 진짜 공감은 충고나 조언, 평가, 판단이 아니라 그 사람의 존재 자체에 주목하는 것이라고 말해요. 나를 지키는 법과 곁의 사람을 살리는 법을 동시에 알려주는 따뜻한 심리서예요.'},
+  {t:'떨림과 울림', a:'김상욱', genre:'sci', mood:['thinking','excited'], vibe:['dreamy','real'], len:'light', want:['insight'], style:'logical', c:'#22314f',
+   d:'물리학자 김상욱이 빛, 원자, 양자역학, 엔트로피, 시간 같은 물리학의 핵심 개념을 소개해요. 수식 대신 이야기로 설명하면서 그 개념이 우리 삶과 존재에 대해 무엇을 말해 주는지까지 연결해요. 과학책인데도 문장이 아름다워서 우주를 바라보는 눈이 조금 넓어지는 느낌을 줘요.'},
+  {t:'열두 발자국', a:'정재승', genre:'sci', mood:['bored','excited'], vibe:['real'], len:'light', want:['insight','motivation'], style:'easy', c:'#d06b3a',
+   d:'뇌과학자 정재승이 대중 강연 열두 편을 엮은 책이에요. 우리는 왜 결정을 어려워하는지, 놀이와 창의성은 어떻게 연결되는지, 미신은 왜 생기는지 같은 질문을 뇌과학 실험과 함께 흥미롭게 풀어줘요. 강연 말투라 술술 읽히고, 한 장씩 따로 읽어도 좋아요.'},
+  {t:'지적 대화를 위한 넓고 얕은 지식', a:'채사장', genre:'sci', mood:['bored','thinking'], vibe:['real'], len:'deep', want:['insight'], style:'easy', c:'#3a6e8f',
+   d:'같은 이름의 인기 팟캐스트 진행자 채사장이 쓴 인문 입문서예요. 1권은 역사·경제·정치·사회·윤리를 하나의 흐름으로 꿰어 설명하고, 2권은 철학·과학·예술·종교 같은 \'현실 너머\'의 이야기로 넘어가요. 교양 지식의 큰 그림을 한 번에 잡고 싶을 때 주말에 몰아 읽기 좋아요.'},
+  {t:'책은 도끼다', a:'박웅현', genre:'sci', mood:['thinking','bored'], vibe:['warm','real'], len:'light', want:['insight'], style:'easy', c:'#7a5230',
+   d:'광고인 박웅현이 진행한 인문학 강독회를 책으로 엮었어요. 김훈, 알랭 드 보통, 『그리스인 조르바』, 『안나 카레니나』 같은 작품의 문장을 천천히 함께 읽으며, 한 문장을 오래 들여다볼 때 세상이 어떻게 다르게 보이는지 보여줘요. 다 읽고 나면 소개된 책들이 읽고 싶어지는 \'책에 대한 책\'이에요.'},
+  {t:'역사의 쓸모', a:'최태성', genre:'sci', mood:['thinking','tired'], vibe:['warm','real'], len:'light', want:['insight','motivation'], style:'easy', c:'#9a4b2f',
+   d:'한국사 강사 최태성이 역사를 외워야 할 과목이 아니라 삶의 질문에 답을 주는 도구로 소개해요. 역사 속 인물들이 갈림길에서 내린 선택을 따라가며 오늘 우리가 어떻게 살아야 할지에 대한 힌트를 찾아요. 강의하듯 쉬운 문장이라 역사에 자신 없는 사람도 편하게 읽을 수 있어요.'},
+  {t:'원미동 사람들', a:'양귀자', genre:'novel', mood:['thinking','tired'], vibe:['real','warm'], len:'light', want:['insight','comfort'], style:'easy', c:'#7c6a4f',
+   d:'1980년대 경기도 부천의 작은 동네 원미동에 사는 사람들을 그린 연작 소설이에요. 서울에서 밀려난 가족, 동네 슈퍼끼리의 가격 경쟁, 사진관 주인과 연탄가게 사람들처럼 평범한 이웃들이 부대끼며 사는 모습이 한 편씩 이어져요. 오래된 책이지만 사람 사는 냄새가 진하게 나서 지금 읽어도 정겨워요.'},
+  {t:'난장이가 쏘아올린 작은 공', a:'조세희', genre:'novel', mood:['thinking'], vibe:['real','dreamy'], len:'light', want:['insight'], style:'poetic', c:'#5b6b74',
+   d:'1970년대 서울, 재개발로 집을 잃게 된 난장이 가족의 이야기를 열두 편의 연작으로 그렸어요. 아버지와 영수·영호·영희 남매가 공장과 철거촌에서 살아가는 현실을 짧고 동화 같은 문장으로 담아서 더 아프게 다가와요. 한국 문학을 이야기할 때 빠지지 않는 고전이에요.'},
+  {t:'엄마를 부탁해', a:'신경숙', genre:'novel', mood:['tired','thinking'], vibe:['warm','real'], len:'light', want:['comfort','insight'], style:'poetic', c:'#9a5b5b',
+   d:'시골에서 올라온 엄마가 서울역 지하철역에서 길을 잃고 사라져요. 엄마를 찾아 헤매는 큰딸, 큰아들, 남편이 차례로 화자가 되어 그동안 몰랐던 엄마의 삶과 마음을 뒤늦게 깨달아 가요. "너"라고 부르는 2인칭 시점이라 읽는 사람도 그 가족의 일원이 된 듯 마음이 저려요.'},
+  {t:'쇼코의 미소', a:'최은영', genre:'novel', mood:['thinking','tired'], vibe:['warm','real'], len:'light', want:['comfort','insight'], style:'poetic', c:'#c48a7a',
+   d:'고등학생 소유가 교류 프로그램으로 집에 머문 일본 소녀 쇼코와 편지를 주고받으며 오랜 시간에 걸쳐 멀어지고 가까워지는 표제작을 비롯한 단편집이에요. 사람 사이의 오해와 미안함, 말하지 못한 마음을 아주 섬세하게 짚어내요. 조용히 마음을 쓰다듬는 문장을 좋아한다면 꼭 맞을 거예요.'},
+  {t:'밝은 밤', a:'최은영', genre:'novel', mood:['tired','thinking'], vibe:['warm'], len:'deep', want:['comfort','immersion'], style:'poetic', c:'#3b4f6e',
+   d:'이혼 후 바닷가 도시 희령으로 내려간 지연이 오래 연락이 끊겼던 할머니를 다시 만나요. 할머니가 들려주는 증조할머니 시절 이야기를 따라 백 년에 걸친 네 세대 여성의 삶과 우정이 펼쳐져요. 아픈 역사를 지나면서도 서로를 지켜 준 사람들의 온기가 오래 남는 장편이에요.'},
+  {t:'이토록 평범한 미래', a:'김연수', genre:'novel', mood:['thinking','tired'], vibe:['dreamy','warm'], len:'light', want:['comfort','insight'], style:'poetic', c:'#6a7fa0',
+   d:'시간과 기억, 그리고 다가올 미래를 다룬 김연수의 단편집이에요. 지나간 일을 다르게 기억하는 것만으로도 오늘이 달라질 수 있다는 생각이 여러 이야기에 걸쳐 이어져요. 담담하지만 희망을 놓지 않는 문장들이라 생각이 많은 날 한 편씩 읽기 좋아요.'},
+  {t:'그 많던 싱아는 누가 다 먹었을까', a:'박완서', genre:'novel', mood:['thinking','tired'], vibe:['warm','real'], len:'light', want:['comfort','insight'], style:'easy', c:'#7a8a4a',
+   d:'박완서가 자신의 유년과 청춘을 소설로 풀어낸 자전적 이야기예요. 개성 근처 시골 박적골에서 뛰놀던 어린 시절, 엄마 손에 이끌려 올라온 서울살이, 그리고 한국전쟁을 겪는 스무 살까지가 생생하게 그려져요. 입말처럼 편안한 문장 속에 시대의 아픔과 사람 냄새가 함께 배어 있어요.'},
+  {t:'일의 기쁨과 슬픔', a:'장류진', genre:'novel', mood:['tired','bored'], vibe:['real'], len:'light', want:['comfort','immersion'], style:'easy', c:'#4a7fb5',
+   d:'판교의 스타트업에서 일하는 직원이 월급을 회사 포인트로 받게 되는 표제작을 비롯해, 요즘 직장인들의 일과 돈, 관계를 그린 단편집이에요. 너무 현실적이라 웃음이 나고, 읽다 보면 "내 얘기 같다"는 생각이 들어요. 한 편이 짧아 출퇴근길에 읽기 딱이에요.'},
+  {t:'완득이', a:'김려령', genre:'novel', mood:['bored','excited'], vibe:['warm','real'], len:'light', want:['comfort','immersion'], style:'easy', c:'#d0743c',
+   d:'키 작은 아버지와 사는 반항기 가득한 고등학생 완득이, 그리고 옆집 옥탑방에 사는 괴짜 담임 \'똥주\'의 이야기예요. 존재조차 몰랐던 베트남 출신 엄마를 만나고 킥복싱을 시작하면서 완득이는 조금씩 마음을 열어요. 티격태격하는 대화가 유쾌해서 술술 읽히는 성장 소설이에요.'},
+  {t:'페인트', a:'이희영', genre:'novel', mood:['excited','bored'], vibe:['real','dreamy'], len:'light', want:['immersion','insight'], style:'easy', c:'#5aa0a0',
+   d:'나라가 아이들을 키우는 센터에서, 아이들이 직접 부모 후보를 면접 보고 고르는 미래가 배경이에요. 열일곱 살 제누는 여러 부모 후보를 만나며 좋은 부모, 좋은 가족이란 무엇인지 고민하게 돼요. 설정이 신선하고 빠르게 읽혀서 가볍게 시작했다가 생각이 깊어지는 책이에요.'},
+  {t:'위저드 베이커리', a:'구병모', genre:'novel', mood:['bored','thinking'], vibe:['dreamy','tense'], len:'light', want:['immersion'], style:'poetic', c:'#5a3e6e',
+   d:'집에서 누명을 쓰고 도망친 소년이 한밤중 동네 빵집으로 숨어들어요. 그곳은 마법사 점장이 소원을 이뤄 주는 수상한 빵을 온라인으로 파는 곳이었고, 소년은 빵을 산 사람들에게 일어나는 일을 지켜보게 돼요. 동화 같지만 어둡고 날카로운 판타지예요.'},
+  {t:'저주토끼', a:'정보라', genre:'novel', mood:['bored'], vibe:['dreamy','tense'], len:'light', want:['immersion'], style:'fast', c:'#4a3a3a',
+   d:'저주에 쓰이는 토끼 모양 전등을 만드는 가문 이야기로 시작하는 기묘한 단편집이에요. 호러와 판타지, SF가 섞인 이야기들이 현실의 불공정함을 비틀어 보여줘요. 부커상 인터내셔널 최종 후보에 오른 작품으로, 으스스하면서도 묘하게 통쾌해요.'},
+  {t:'천 개의 파랑', a:'천선란', genre:'novel', mood:['tired','excited'], vibe:['warm','dreamy'], len:'deep', want:['comfort','immersion'], style:'easy', c:'#3d86b8',
+   d:'떨어져 폐기될 뻔한 휴머노이드 기수 콜리와, 너무 빨리 달려 관절이 망가진 경주마 투데이가 주인공이에요. 콜리를 고쳐 준 소녀 연재와 휠체어를 타는 언니 은혜가 투데이를 살리기 위해 힘을 모아요. 빠르지 않아도 괜찮다고 말해 주는 따뜻한 SF 장편이에요.'},
+  {t:'나는 나로 살기로 했다', a:'김수현', genre:'essay', mood:['tired'], vibe:['warm'], len:'light', want:['comfort'], style:'easy', c:'#e0b04a',
+   d:'남의 기준에 맞추느라 지친 사람들에게 \'나답게\' 사는 법을 이야기하는 그림 에세이예요. 열등감, 인간관계, 불안 같은 주제를 짧은 글과 일러스트로 풀어서 한 장씩 넘기기 편해요. 마음이 바닥일 때 다정한 친구의 말처럼 읽히는 책이에요.'},
+  {t:'아무튼, 술', a:'김혼비', genre:'essay', mood:['bored','tired'], vibe:['warm','real'], len:'light', want:['comfort'], style:'easy', c:'#b84a3a',
+   d:'술을 사랑하는 작가 김혼비가 술과 함께한 순간들을 유쾌하게 풀어낸 에세이예요. 한 가지 좋아하는 것에 대해 쓰는 \'아무튼\' 시리즈 중 하나로, 웃기다가도 술자리의 쓸쓸함과 사람에 대한 애정이 묻어나요. 얇고 가벼워서 심심할 때 금방 읽혀요.'},
+  {t:'나는 그냥 버스기사입니다', a:'허혁', genre:'essay', mood:['tired','thinking'], vibe:['real','warm'], len:'light', want:['comfort','insight'], style:'easy', c:'#3a8a5a',
+   d:'전주에서 시내버스를 모는 기사가 운전석에서 보고 느낀 하루하루를 적은 에세이예요. 배차 시간에 쫓기는 고단함, 승객들과의 크고 작은 일, 노동에 대한 생각이 꾸밈없이 담겨 있어요. 매일 지나치던 누군가의 자리에서 세상을 보게 해 주는 책이에요.'},
+  {t:'무례한 사람에게 웃으며 대처하는 법', a:'정문정', genre:'self', mood:['tired'], vibe:['real'], len:'light', want:['comfort','motivation'], style:'easy', c:'#d06a7a',
+   d:'선 넘는 말과 무례한 태도에 상처받으면서도 제대로 대응하지 못했던 경험에서 출발한 책이에요. 감정에 휘둘리지 않고 내 마음을 지키면서 단호하게 선을 긋는 말하기와 태도를 구체적인 상황별로 알려줘요. 관계에 지쳐 있을 때 든든한 무기가 되어 줘요.'},
+  {t:'매일 아침 써봤니?', a:'김민식', genre:'self', mood:['bored','excited'], vibe:['real'], len:'light', want:['motivation'], style:'easy', c:'#e08a3a',
+   d:'방송사 PD인 저자가 매일 아침 블로그에 글을 쓴 습관이 삶을 어떻게 바꿨는지 들려줘요. 거창한 재능보다 작은 습관을 꾸준히 이어 가는 힘, 그리고 기록이 기회를 만드는 과정을 유쾌하게 풀어냈어요. 다 읽고 나면 오늘 당장 뭐라도 써 보고 싶어져요.'},
+  {t:'그냥 하지 말라', a:'송길영', genre:'self', mood:['thinking','bored'], vibe:['real'], len:'light', want:['insight','motivation'], style:'logical', c:'#2f4f6f',
+   d:'빅데이터로 사람들의 마음을 읽어 온 분석가 송길영이 바뀌어 가는 시대와 일의 방식을 이야기해요. 남들 하는 대로 \'그냥\' 하지 말고, 왜 하는지 스스로 묻고 나만의 방식을 찾아야 한다고 말해요. 앞으로 어떻게 일하고 살지 고민될 때 생각을 정리해 주는 책이에요.'},
+  {t:'나의 문화유산답사기', a:'유홍준', genre:'sci', mood:['bored','excited'], vibe:['real','warm'], len:'deep', want:['insight'], style:'easy', c:'#6e5a3a',
+   d:'"아는 만큼 보인다"는 말로 유명한 미술사학자 유홍준의 답사기예요. 첫 권은 강진과 해남 같은 남도 지역부터 시작해, 절과 탑, 옛집과 풍경에 얽힌 역사와 이야기를 맛깔나게 풀어줘요. 읽고 나면 주말에 그곳으로 여행을 떠나고 싶어지는 책이에요.'},
+  {t:'개미제국의 발견', a:'최재천', genre:'sci', mood:['excited','bored'], vibe:['real'], len:'light', want:['insight'], style:'easy', c:'#7a4a2a',
+   d:'생태학자 최재천이 개미 사회의 놀라운 모습을 소개하는 과학 교양서예요. 버섯을 키우는 농사꾼 개미, 진딧물을 기르는 개미, 여왕과 일개미의 분업처럼 작은 곤충이 만든 거대한 \'제국\'을 이야기로 풀어줘요. 과학이 처음이어도 재미있게 읽을 수 있어요.'},
+  {t:'이어령의 마지막 수업', a:'김지수', genre:'sci', mood:['thinking','tired'], vibe:['warm','real'], len:'light', want:['insight','comfort'], style:'poetic', c:'#4a4a5a',
+   d:'암 투병 중이던 이어령 선생과 기자 김지수가 1년 넘게 나눈 대화를 엮은 인터뷰집이에요. 죽음을 앞둔 지성이 삶과 사랑, 용서, 그리고 \'존재\'에 대해 마지막으로 들려주는 이야기가 담겨 있어요. 삶을 다시 바라보게 하는 문장이 많은 책이에요.'},
+  {t:'거꾸로 읽는 세계사', a:'유시민', genre:'sci', mood:['thinking','bored'], vibe:['real','tense'], len:'deep', want:['insight'], style:'logical', c:'#5a2a2a',
+   d:'드레퓌스 사건, 러시아 혁명, 대공황, 베트남 전쟁처럼 근현대 세계를 뒤흔든 사건들을 하나씩 짚어 보는 역사 교양서예요. 교과서처럼 외우는 대신 사건의 배경과 사람들의 선택을 이야기로 풀어서 오늘의 세계가 어떻게 만들어졌는지 보여줘요. 명확하고 힘 있는 문장이라 몰입해서 읽게 돼요.'},
+  {t:'미술관에 간 화학자', a:'전창림', genre:'sci', mood:['excited','bored'], vibe:['dreamy','real'], len:'light', want:['insight'], style:'easy', c:'#a05a8a',
+   d:'화학자가 명화 속에 숨은 과학을 읽어 주는 책이에요. 물감의 성분, 색이 바래는 이유, 화가들이 쓴 재료와 기법을 따라가다 보면 익숙한 그림이 전혀 다르게 보여요. 미술과 과학을 함께 즐길 수 있는 가벼운 교양서예요.'},
+  {t:'날씨가 좋으면 찾아가겠어요', a:'이도우', genre:'romance', mood:['tired','thinking'], vibe:['warm'], len:'deep', want:['comfort'], style:'poetic', c:'#6f8fae',
+   d:'서울 생활에 지친 첼리스트 해원이 겨울, 이모가 사는 시골 마을 북현리로 내려와요. 그곳에서 중학교 동창 은섭이 운영하는 작은 서점 \'굿나잇책방\'을 드나들며 두 사람의 마음이 천천히 가까워져요. 눈 내리는 마을과 책방의 온기가 가득해서, 이 사이트 분위기와 가장 닮은 연애소설이에요.'},
+  {t:'사서함 110호의 우편물', a:'이도우', genre:'romance', mood:['tired','excited'], vibe:['warm','real'], len:'deep', want:['comfort','immersion'], style:'poetic', c:'#c98a6a',
+   d:'라디오 작가 공진솔과, 그 프로그램에 새로 온 시인 출신 PD 이건의 이야기예요. 함께 일하며 조금씩 서로를 알아 가는 과정이 편지처럼 느리고 조용하게 그려져요. 요란한 사건 없이 마음이 스며드는 어른의 연애를 좋아한다면 오래 기억에 남을 거예요.'},
+  {t:'내 이름은 김삼순', a:'지수현', genre:'romance', mood:['excited','bored','tired'], vibe:['warm','real'], len:'light', want:['comfort','immersion'], style:'easy', c:'#e07a8a',
+   d:'실연당한 서른 살 파티시에 김삼순이 레스토랑 사장 현진헌과 얽혀 계약 연애를 하게 되는 이야기예요. 할 말은 하는 씩씩한 삼순과 까칠한 진헌의 티격태격이 유쾌하고, 일과 사랑 사이에서 고민하는 마음도 현실적이에요. 같은 이름의 드라마 원작 소설이에요.'},
+  {t:'성균관 유생들의 나날', a:'정은궐', genre:'romance', mood:['excited','bored'], vibe:['warm','tense'], len:'deep', want:['immersion'], style:'easy', c:'#4a6a8a',
+   d:'조선 정조 시대, 가난한 집안의 김윤희는 병약한 남동생 대신 남장을 하고 성균관에 들어가요. 원칙주의자 이선준, 거친 문재신, 멋쟁이 구용하와 함께 지내며 정체를 숨겨야 하는 아슬아슬함과 설렘이 이어져요. 드라마 \'성균관 스캔들\'의 원작으로, 주말에 몰아 읽기 좋은 사극 로맨스예요.'},
+  {t:'해를 품은 달', a:'정은궐', genre:'romance', mood:['excited','bored'], vibe:['dreamy','tense'], len:'deep', want:['immersion'], style:'poetic', c:'#2a3a6a',
+   d:'어린 세자 이훤과 세자빈으로 간택된 연우는 서로를 마음에 품지만, 연우는 의문의 병으로 세상을 떠나요. 8년 뒤, 왕이 된 훤 앞에 기억을 잃은 무녀 \'월\'이 나타나면서 숨겨진 음모와 애틋한 사랑이 다시 시작돼요. 가상의 조선을 배경으로 한 운명적인 사극 로맨스예요.'},
+  {t:'백의 그림자', a:'황정은', genre:'romance', mood:['thinking','tired'], vibe:['dreamy','real'], len:'light', want:['comfort','insight'], style:'poetic', c:'#7a8a8a',
+   d:'철거를 앞둔 도심의 낡은 전자상가에서 일하는 은교와 무재의 조용한 사랑 이야기예요. 그림자가 일어서는 기묘한 일들 사이로, 두 사람은 소박한 대화를 나누며 서로에게 기대요. 짧고 담담한 문장인데 다 읽고 나면 오래 마음이 따뜻해져요.'},
+  {t:'사랑의 생애', a:'이승우', genre:'romance', mood:['thinking'], vibe:['real'], len:'light', want:['insight'], style:'logical', c:'#8a3a4a',
+   d:'사랑은 사람이 하는 것이 아니라, 사랑이 사람 안에 들어와 살다 가는 것이라는 독특한 시선으로 쓰인 소설이에요. 선희와 형배, 영석의 엇갈리는 마음을 따라가며 사랑이 사람을 어떻게 바꾸고 흔드는지 차분히 들여다봐요. 연애 이야기이면서 사랑에 대한 사유를 담은 책이에요.'},
+  {t:'구의 증명', a:'최진영', genre:'romance', mood:['thinking','bored'], vibe:['dreamy','real','tense'], len:'light', want:['immersion'], style:'poetic', c:'#3a2a2a',
+   d:'어린 시절부터 서로가 전부였던 구와 담의 사랑 이야기예요. 빚에 쫓기던 구가 죽자, 담은 그를 잃지 않기 위해 누구도 상상하지 못한 방식으로 그를 기억하려 해요. 짧지만 강렬하고 아픈 소설이라, 따뜻한 연애소설보다 깊고 진한 사랑 이야기를 원할 때 맞아요.'},
+  {t:'꽃을 보듯 너를 본다', a:'나태주', genre:'romance', mood:['tired','excited'], vibe:['warm'], len:'light', want:['comfort'], style:'poetic', c:'#d89aa0',
+   d:'\'풀꽃\'의 시인 나태주가 사랑과 그리움을 노래한 짧은 시들을 모은 시집이에요. 한 편이 몇 줄 안 되는 소박한 시들이라 아무 페이지나 펼쳐 읽기 좋아요. 좋아하는 사람에게 문장 하나 건네고 싶을 때 곁에 두기 좋은 책이에요.'},
+  {t:'홍학의 자리', a:'정해연', genre:'mystery', mood:['bored'], vibe:['tense','real'], len:'light', want:['immersion'], style:'fast', c:'#c25a6a',
+   d:'고등학교 교사 김준후는 남몰래 만나던 제자 다현이 학교에서 숨진 채 발견되자, 두려운 마음에 시신을 호수에 숨겨요. 그런데 다현의 죽음 뒤에는 그가 전혀 몰랐던 이야기가 숨어 있었어요. 마지막 몇 장의 반전으로 입소문이 난 한국 미스터리라, 결말 스포일러를 피해서 읽는 걸 추천해요.'},
+  {t:'여름, 어디선가 시체가', a:'박연선', genre:'mystery', mood:['bored','excited'], vibe:['warm','tense'], len:'light', want:['immersion','comfort'], style:'easy', c:'#5a9a5a',
+   d:'할머니 혼자 사는 시골 마을에 얼떨결에 남겨진 강무순이, 오래전 마을에서 소녀들이 사라진 사건의 단서를 우연히 발견하면서 탐정 노릇을 시작해요. 동네 꼬마와 종갓집 아이까지 엉뚱한 조수들과 함께 마을의 비밀을 하나씩 파헤쳐요. 무섭기보다 유쾌하게 웃으며 읽는 시골 코믹 미스터리예요.'},
+  {t:'죽이고 싶은 아이', a:'이꽃님', genre:'mystery', mood:['bored','thinking'], vibe:['tense','real'], len:'light', want:['immersion','insight'], style:'fast', c:'#4a5a7a',
+   d:'한 고등학교에서 서은이 숨진 채 발견되고, 가장 친한 친구였던 주연이 범인으로 지목돼요. 친구, 선생님, 가족 등 여러 사람의 증언이 이어질수록 진실은 오히려 흐려져요. 짧고 빠르게 읽히지만, 사람들이 \'믿고 싶은 대로 믿는\' 모습을 날카롭게 보여주는 청소년 미스터리예요.'},
+  {t:'살인자의 쇼핑몰', a:'강지영', genre:'mystery', mood:['bored','excited'], vibe:['tense'], len:'light', want:['immersion'], style:'fast', c:'#2a2a2a',
+   d:'갑자기 세상을 떠난 삼촌에게서 온라인 쇼핑몰을 물려받은 정지안. 그런데 그 쇼핑몰은 사실 킬러들이 무기를 거래하던 곳이었고, 정체 모를 사람들이 지안을 노리기 시작해요. 영화처럼 빠르게 전개되는 액션 스릴러라 심심할 때 단숨에 읽혀요.'},
+  {t:'친밀한 이방인', a:'정한아', genre:'mystery', mood:['thinking'], vibe:['real','dreamy'], len:'light', want:['insight','immersion'], style:'poetic', c:'#8a7a9a',
+   d:'슬럼프에 빠진 소설가가 예전에 자신이 쓴 소설이 낯선 사람의 이름으로 세상에 나와 있다는 걸 알게 돼요. 그 사람을 추적하다 보니 여러 이름과 직업으로 살아온 여자 이유미의 삶이 드러나요. 범인을 찾는 추리보다 \'한 사람은 누구인가\'를 묻는 미스터리를 좋아한다면 잘 맞아요.'},
+  {t:'방각본 살인 사건', a:'김탁환', genre:'mystery', mood:['bored','thinking'], vibe:['tense','real'], len:'deep', want:['immersion','insight'], style:'poetic', c:'#6a4a2a',
+   d:'정조 시대 한양에서 소설책을 즐겨 읽던 사람들이 잇따라 살해되는 사건이 벌어져요. 의금부 도사 이명방과 천재적인 관찰력을 지닌 김진이 수사에 나서고, 박지원·박제가 같은 실학자들도 등장해요. 조선의 거리와 책 문화를 생생하게 담은 역사 추리소설로 \'백탑파\' 시리즈의 첫 권이에요.'},
+  {t:'마당이 있는 집', a:'김진영', genre:'mystery', mood:['bored','thinking'], vibe:['tense','real'], len:'light', want:['immersion'], style:'fast', c:'#4a6a3a',
+   d:'새로 이사한 고급 주택의 마당에서 이상한 냄새를 맡은 주란은 점점 남편을 의심하게 돼요. 한편 가난과 폭력에 시달리던 상은은 남편이 갑자기 죽은 뒤 뜻밖의 선택을 해요. 서로 다른 두 여자의 시점이 번갈아 이어지다 하나로 만나는 심리 스릴러예요.'},
+];
+
+</script>
+<script>
+/* ===================== 질문 ===================== */
+const QUESTIONS = [
+  { key:'mood', label:'첫 번째 질문', title:'요즘 기분은 어떤가요?', weight:2, options:[
+    {v:'tired',   e:'🫖', t:'지침',        s:'조금 쉬어 가고 싶어요'},
+    {v:'excited', e:'🌷', t:'설렘',        s:'뭔가 새로운 일이 생길 것 같아요'},
+    {v:'bored',   e:'🌀', t:'심심함',      s:'확 빠져들 무언가가 필요해요'},
+    {v:'thinking',e:'🌙', t:'생각이 많음', s:'머릿속이 복잡해요'},
+  ]},
+  { key:'vibe', label:'두 번째 질문', title:'좋아하는 분위기는?', weight:2, options:[
+    {v:'warm',   e:'🔥', t:'따뜻한',  s:'마음이 몽글몽글해지는'},
+    {v:'tense',  e:'🗝️', t:'긴장감',  s:'다음 장이 궁금해 멈출 수 없는'},
+    {v:'dreamy', e:'✨', t:'몽환적',  s:'현실에서 살짝 떠 있는'},
+    {v:'real',   e:'🏙️', t:'현실적',  s:'우리 삶과 맞닿아 있는'},
+  ]},
+  { key:'len', label:'세 번째 질문', title:'책 읽을 시간은 어떻게 나나요?', weight:1, options:[
+    {v:'light', e:'☕', t:'짧게 자주',      s:'출퇴근길, 자기 전 틈틈이'},
+    {v:'deep',  e:'🛋️', t:'주말에 몰아서', s:'한 번 펼치면 오래 앉아 있어요'},
+  ]},
+  { key:'genre', label:'네 번째 질문', title:'선호하는 장르는?', weight:3,
+    groups:[
+      {h:'📖 이야기 속으로', d:'다른 사람의 삶에 푹 빠지고 싶을 때', items:['novel','romance','mystery']},
+      {h:'💡 생각과 배움',   d:'진짜 이야기와 지식을 얻고 싶을 때',   items:['essay','self','sci']},
+    ],
+    options:[
+    {v:'novel',   e:'🕯️', t:'소설',      s:'삶을 담은 이야기'},
+    {v:'romance', e:'💌', t:'로맨스',    s:'설렘과 애틋함'},
+    {v:'mystery', e:'🔍', t:'추리·미스터리', s:'진실을 쫓는 재미'},
+    {v:'essay',   e:'✉️', t:'에세이',    s:'진솔한 하루'},
+    {v:'self',    e:'🌱', t:'자기계발',  s:'더 나은 내일'},
+    {v:'sci',     e:'🔭', t:'과학·인문', s:'넓어지는 시야'},
+  ]},
+  { key:'want', label:'다섯 번째 질문', title:'책을 덮을 때 무엇을 얻고 싶나요?', weight:2, options:[
+    {v:'comfort',    e:'🧣', t:'위로',          s:'괜찮다는 말 한마디'},
+    {v:'immersion',  e:'🌊', t:'몰입',          s:'시간 가는 줄 모르는 재미'},
+    {v:'insight',    e:'💡', t:'새로운 시선',   s:'세상을 다르게 보는 계기'},
+    {v:'motivation', e:'🚀', t:'움직일 힘',     s:'당장 뭔가 해 보고 싶은 마음'},
+  ]},
+  { key:'style', label:'마지막 질문', title:'끌리는 문장은 어떤 쪽인가요?', weight:1, options:[
+    {v:'easy',    e:'🍞', t:'담백하고 쉬운',     s:'술술 읽히는 문장'},
+    {v:'poetic',  e:'🍂', t:'섬세하고 시적인',   s:'밑줄 긋고 싶은 문장'},
+    {v:'fast',    e:'⚡', t:'빠르고 속도감 있는', s:'페이지가 저절로 넘어가는'},
+    {v:'logical', e:'🧭', t:'논리적이고 명확한', s:'생각이 정리되는 문장'},
+  ]},
+];
+
+/* ===================== 이유 문장 재료 ===================== */
+const LABEL = {
+  mood:{tired:'지침',excited:'설렘',bored:'심심함',thinking:'생각이 많음'},
+  vibe:{warm:'따뜻한',tense:'긴장감',dreamy:'몽환적',real:'현실적'},
+  len:{light:'짧게 자주',deep:'주말에 몰아서'},
+  genre:{novel:'소설',essay:'에세이',self:'자기계발',sci:'과학·인문',romance:'로맨스',mystery:'추리·미스터리'},
+  want:{comfort:'위로',immersion:'몰입',insight:'새로운 시선',motivation:'움직일 힘'},
+  style:{easy:'담백한 문장',poetic:'시적인 문장',fast:'속도감',logical:'명확한 문장'},
+};
+const WHY = {
+  mood:{
+    tired:'요즘 지친 마음에 잠시 쉬어 갈 자리를 내어 줄 거예요',
+    excited:'설레는 지금의 기분과 잘 어울리는 반짝임이 있어요',
+    bored:'심심한 일상에 확실한 자극이 되어 줄 거예요',
+    thinking:'생각이 많은 요즘, 함께 곱씹을 거리를 건네줘요'},
+  vibe:{
+    warm:'좋아하는 따뜻한 분위기가 책 전체에 흘러요',
+    tense:'좋아하는 팽팽한 긴장감이 끝까지 이어져요',
+    dreamy:'좋아하는 몽환적인 분위기가 가득해요',
+    real:'좋아하는 현실적인 시선이 살아 있어요'},
+  len:{
+    light:'짧게 끊어 읽어도 흐름을 놓치지 않아요',
+    deep:'주말에 한 번에 푹 빠져 읽기 좋은 호흡이에요'},
+  want:{
+    comfort:'책을 덮을 때 \'괜찮다\'는 위로가 남아요',
+    immersion:'시간 가는 줄 모르고 몰입하게 돼요',
+    insight:'세상을 조금 다르게 보는 계기가 되어 줄 거예요',
+    motivation:'다 읽고 나면 뭔가 시작하고 싶어질 거예요'},
+  style:{
+    easy:'문장이 담백해서 술술 읽혀요',
+    poetic:'밑줄 긋고 싶은 섬세한 문장이 많아요',
+    fast:'페이지가 저절로 넘어가는 속도감이 있어요',
+    logical:'논리가 명확해서 생각이 정리돼요'},
+};
+
+/* ===================== 상태 & 로직 ===================== */
+let step = 0;
+let answers = {};
+
+const $ = s => document.querySelector(s);
+
+function showScreen(id){
+  const cur = document.querySelector('.screen.active');
+  const next = document.getElementById(id);
+  if(cur === next) return;
+  if(cur){
+    cur.classList.remove('active');
+    cur.classList.add('leaving');
+    setTimeout(()=>{
+      cur.classList.remove('leaving');
+      next.classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    },280);
+  } else next.classList.add('active');
+}
+
+function renderDots(){
+  $('#dots').innerHTML = QUESTIONS.map((_,i)=>
+    `<span class="${i<step?'done':i===step?'now':''}"></span>`).join('');
+}
+
+function renderQuestion(dir){
+  const q = QUESTIONS[step];
+  $('#qCount').textContent = `${step+1} / ${QUESTIONS.length}`;
+  $('#bar').style.width = `${(step/QUESTIONS.length)*100 + 100/QUESTIONS.length/2}%`;
+  $('#backBtn').disabled = step === 0;
+  renderDots();
+
+  const html = `
+    <div class="q-box">
+      <div class="q-label">${q.label}</div>
+      <h2 class="q-title">${q.title}</h2>
+      ${q.groups ? q.groups.map((g,gi)=>`
+        <div class="opt-group" style="animation-delay:${.05+gi*.12}s">
+          <div class="og-head"><b>${g.h}</b><small>${g.d}</small></div>
+          <div class="options tiles">
+            ${g.items.map((v,i)=>{ const o = q.options.find(x=>x.v===v); return `
+              <button class="option tile ${answers[q.key]===o.v?'selected':''}" data-v="${o.v}" style="animation-delay:${.12+gi*.12+i*.05}s">
+                <span class="emo">${o.e}</span><b>${o.t}</b><small>${o.s}</small>
+              </button>`; }).join('')}
+          </div>
+        </div>`).join('') : `
+      <div class="options">
+        ${q.options.map((o,i)=>`
+          <button class="option ${answers[q.key]===o.v?'selected':''}" data-v="${o.v}" style="animation-delay:${.08+i*.06}s">
+            <span class="emo">${o.e}</span>
+            <span class="txt"><b>${o.t}</b><small>${o.s}</small></span>
+          </button>`).join('')}
+      </div>`}
+    </div>`;
+
+  const area = $('#qArea');
+  const old = area.querySelector('.q-box');
+  const put = ()=>{
+    area.innerHTML = html;
+    area.querySelectorAll('.option').forEach(btn=>{
+      btn.addEventListener('click',()=>choose(q.key, btn.dataset.v, btn));
+    });
+  };
+  if(old && dir){ old.classList.add('out'); setTimeout(put,230); }
+  else put();
+}
+
+let locked = false;
+function choose(key, v, btn){
+  if(locked) return;
+  locked = true;
+  answers[key] = v;
+  btn.closest('.q-box').querySelectorAll('.option').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  setTimeout(()=>{
+    locked = false;
+    if(step < QUESTIONS.length-1){
+      step++;
+      renderQuestion(1);
+    } else {
+      $('#bar').style.width = '100%';
+      showResult();
+    }
+  },380);
+}
+
+function scoreBook(b){
+  let score = 0; const hits = [];
+  QUESTIONS.forEach(q=>{
+    const a = answers[q.key]; const val = b[q.key];
+    const match = Array.isArray(val) ? val.includes(a) : val === a;
+    if(match){ score += q.weight; hits.push(q.key); }
+  });
+  return {score, hits};
+}
+
+function buildWhy(b, hits){
+  // 장르를 제외한 일치 항목 중 앞의 3개로 문장을 만든다
+  const order = ['mood','want','vibe','len','style'];
+  const keys = order.filter(k=>hits.includes(k));
+  const parts = keys.slice(0,3).map(k=>WHY[k][answers[k]]);
+  const genreLine = hits.includes('genre') ? `찾고 있던 ${LABEL.genre[b.genre]}이고, ` : '';
+  if(!parts.length){
+    return `${genreLine}평소 고르던 책과는 조금 다르지만, 새로운 취향을 발견하는 계기가 될 수 있어요.`;
+  }
+  return genreLine + parts.join('. ') + '.';
+}
+
+function tagList(b){
+  const vibes = b.vibe.map(v=>LABEL.vibe[v]);
+  return [LABEL.genre[b.genre], ...vibes, b.len==='light'?'짧게 읽기 좋음':'긴 호흡'];
+}
+
+/* ===================== 읽고 싶은 책 담기 ===================== */
+const WISH_KEY = 'cozy-bookstore-wishlist';
+let wish = (()=>{ try{ return JSON.parse(localStorage.getItem(WISH_KEY)) || []; }catch(e){ return []; } })();
+function saveWish(){ try{ localStorage.setItem(WISH_KEY, JSON.stringify(wish)); }catch(e){} }
+const inWish = t => wish.includes(t);
+const findBook = t => BOOKS.find(b=>b.t===t);
+const attr = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+
+function heartHTML(b){
+  const on = inWish(b.t);
+  return `<button class="heart ${on?'on':''}" data-t="${attr(b.t)}" aria-label="읽고 싶은 책에 담기" aria-pressed="${on}">${on?'♥':'♡'}</button>`;
+}
+function syncHearts(){
+  document.querySelectorAll('.heart').forEach(h=>{
+    const on = inWish(h.dataset.t);
+    h.classList.toggle('on', on); h.textContent = on ? '♥' : '♡'; h.setAttribute('aria-pressed', on);
+  });
+}
+function bindHearts(){
+  document.querySelectorAll('.heart').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const t = h.dataset.t;
+      if(inWish(t)){ wish = wish.filter(x=>x!==t); tip('읽고 싶은 책에서 뺐어요'); }
+      else { wish.push(t); tip(`🧺 『${t}』 담았어요`); bumpFab(); }
+      saveWish(); syncHearts(); updateWishCount();
+      h.classList.remove('bump'); void h.offsetWidth; h.classList.add('bump');
+    });
+  });
+}
+function bumpFab(){ const f = $('#wishFab'); f.classList.remove('bump'); void f.offsetWidth; f.classList.add('bump'); }
+function updateWishCount(){
+  const c = $('#wishCount'); c.textContent = wish.length; c.classList.toggle('show', wish.length > 0);
+}
+function renderWish(){
+  const box = $('#wishList');
+  if(!wish.length){
+    box.innerHTML = `<div class="wish-empty">아직 담은 책이 없어요.<br>추천 결과에서 ♡를 눌러 읽고 싶은 책을 담아 보세요.</div>`;
+    return;
+  }
+  box.innerHTML = wish.slice().reverse().map(t=>{
+    const b = findBook(t); if(!b) return '';
+    return `<div class="wish-item" data-t="${attr(t)}">
+      ${coverHTML(b)}
+      <div class="wi"><b>${b.t}</b><span>${b.a} · ${LABEL.genre[b.genre]}</span><small>${b.d}</small></div>
+      <button class="wish-del" aria-label="빼기">빼기</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.wish-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const item = btn.closest('.wish-item'), t = item.dataset.t;
+      item.classList.add('out');
+      setTimeout(()=>{
+        wish = wish.filter(x=>x!==t); saveWish(); updateWishCount(); syncHearts(); renderWish();
+      }, 230);
+    });
+  });
+}
+function openSheet(){ renderWish(); $('#sheet').classList.add('open'); $('#sheetBg').classList.add('open'); }
+function closeSheet(){ $('#sheet').classList.remove('open'); $('#sheetBg').classList.remove('open'); }
+
+function coverHTML(b){
+  return `<div class="cover" style="background:${b.c}">${b.t}<span class="ca">${b.a}</span></div>`;
+}
+
+function showResult(){
+  const ranked = BOOKS.map((b,i)=>({b, i, ...scoreBook(b)}))
+    .sort((x,y)=> y.score - x.score || y.hits.length - x.hits.length || x.i - y.i);
+
+  const top = ranked[0];
+  // 비슷한 책: 같은 장르를 우선하되 점수 순
+  const rest = ranked.slice(1);
+  const sameGenre = rest.filter(r=>r.b.genre===top.b.genre);
+  const subs = (sameGenre.length>=2 ? sameGenre : rest).slice(0,2);
+
+  $('#youChips').innerHTML = QUESTIONS.map(q=>`<span class="chip">${LABEL[q.key][answers[q.key]]}</span>`).join('');
+
+  $('#mainBook').innerHTML = `
+    <article class="book main" style="animation-delay:.15s">
+      <div class="badge">🕯️ 가장 잘 맞는 책</div>
+      ${heartHTML(top.b)}
+      ${coverHTML(top.b)}
+      <div class="b-info">
+        <div class="b-title">${top.b.t}</div>
+        <div class="b-author">${top.b.a} 지음</div>
+        <div class="b-tags">${tagList(top.b).map(t=>`<span>${t}</span>`).join('')}</div>
+        <p class="b-desc">${top.b.d}</p>
+        <div class="b-why"><b>당신에게 맞는 이유</b>${buildWhy(top.b, top.hits)}</div>
+      </div>
+    </article>`;
+
+  $('#subBooks').innerHTML = subs.map((r,k)=>`
+    <article class="book" style="animation-delay:${.35+k*.15}s">
+      ${heartHTML(r.b)}
+      ${coverHTML(r.b)}
+      <div class="b-info">
+        <div class="b-title">${r.b.t}</div>
+        <div class="b-author">${r.b.a} 지음</div>
+        <div class="b-tags">${tagList(r.b).map(t=>`<span>${t}</span>`).join('')}</div>
+        <p class="b-desc">${r.b.d}</p>
+        <div class="b-why"><b>당신에게 맞는 이유</b>${buildWhy(r.b, r.hits)}</div>
+      </div>
+    </article>`).join('');
+
+  bindHearts();
+  setTimeout(()=>showScreen('result'),250);
+}
+
+/* ===================== 배경음악 ===================== */
+/* 자작곡 「모닥불 곁의 서점」
+   F장조, 3/4박자 자장가 왈츠, 76BPM, 16마디 반복.
+   부드러운 전자피아노 + 낮게 깔리는 패드 + 은은한 베이스 + 모닥불 타는 소리를 Web Audio로 직접 합성해요. */
+const BPM = 76, SPB = 60 / BPM, BAR = 3, LOOP_BARS = 16;
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+// [베이스 근음, 화음 구성음]
+const CHORDS = [
+  [41,[57,60,65]], [45,[57,60,64]], [46,[58,62,65]], [41,[57,60,65]],   // F   Am  Bb  F
+  [43,[58,62,65]], [48,[55,60,64]], [41,[57,60,65]], [48,[55,60,64]],   // Gm7 C   F   C
+  [46,[58,62,65]], [48,[55,60,64]], [45,[57,60,64]], [50,[57,62,65]],   // Bb  C   Am  Dm
+  [43,[58,62,65]], [48,[55,60,64]], [41,[60,65,67]], [48,[55,60,64]],   // Gm7 C   Fadd9 C
+];
+// 멜로디 (음, 박) — null은 쉼표
+const MELODY = [
+  [69,2],[72,1],   [72,2],[69,1],   [70,1],[74,1],[72,1],   [69,3],
+  [70,2],[67,1],   [64,1],[67,1],[72,1],   [69,2],[65,1],   [67,3],
+  [74,2],[72,1],   [76,2],[72,1],   [72,2],[69,1],   [74,1],[72,1],[69,1],
+  [70,2],[74,1],   [72,1],[70,1],[67,1],   [69,1.5],[67,.5],[65,1],   [67,2],[null,1],
+];
+
+const EVENTS = [];
+CHORDS.forEach(([root, t], bar)=>{
+  const b0 = bar * BAR;
+  EVENTS.push({beat:b0, type:'bass', m:root, dur:BAR});
+  EVENTS.push({beat:b0, type:'pad', ms:[root+12, ...t], dur:BAR});
+  const arp = [root+12, t[0], t[1], t[2], t[1], t[0]];
+  arp.forEach((m,i)=> EVENTS.push({beat:b0 + i*.5, type:'arp', m, dur:.5, v: i===0 ? .1 : .065}));
+  EVENTS.push({beat:b0 + 1.5, type:'chime', ms:t, p: bar>=8 ? .35 : .15});
+});
+let mb = 0;
+MELODY.forEach(([m,d])=>{ if(m!==null) EVENTS.push({beat:mb, type:'mel', m, dur:d}); mb += d; });
+EVENTS.sort((a,b)=>a.beat-b.beat);
+
+let actx = null, master = null, reverb = null, session = null, noiseBuf = null, brownBuf = null;
+let bgmOn = false, userPaused = false, timer = null;
+let loopStart = 0, loopN = 0, evIdx = 0, nextCrackle = 0;
+
+function initAudio(){
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+  const comp = actx.createDynamicsCompressor();
+  comp.threshold.value = -20; comp.ratio.value = 3;
+  master = actx.createGain(); master.gain.value = .9;
+  master.connect(comp).connect(actx.destination);
+  // 작은 방 정도의 짧고 따뜻한 잔향
+  reverb = actx.createConvolver();
+  const len = actx.sampleRate * 1.8, ir = actx.createBuffer(2, len, actx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d = ir.getChannelData(c);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 4);
+  }
+  reverb.buffer = ir;
+  const rlp = actx.createBiquadFilter(); rlp.type = 'lowpass'; rlp.frequency.value = 2500;
+  const wet = actx.createGain(); wet.gain.value = .3;
+  reverb.connect(rlp).connect(wet).connect(master);
+  // 모닥불용 노이즈 (화이트 / 브라운)
+  const n = actx.sampleRate * 4;
+  noiseBuf = actx.createBuffer(1, n, actx.sampleRate);
+  brownBuf = actx.createBuffer(1, n, actx.sampleRate);
+  const w = noiseBuf.getChannelData(0), b = brownBuf.getChannelData(0);
+  let last = 0;
+  for(let i=0;i<n;i++){
+    w[i] = Math.random()*2-1;
+    last = (last + .02 * w[i]) / 1.02; b[i] = last * 3.5;
+  }
+}
+
+function out(node, dry, send){
+  const g1 = actx.createGain(); g1.gain.value = dry;
+  node.connect(g1).connect(session.dry);
+  if(send){ const g2 = actx.createGain(); g2.gain.value = send; node.connect(g2).connect(session.wet); }
+}
+
+// 둥글고 따뜻한 전자피아노 소리
+function epiano(t, m, dur, vel, bright){
+  const f = mtof(m);
+  const o1 = actx.createOscillator(); o1.type = 'sine'; o1.frequency.value = f;
+  const o2 = actx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+  const o2g = actx.createGain(); o2g.gain.setValueAtTime(.18, t); o2g.gain.exponentialRampToValueAtTime(.02, t + .6);
+  const o3 = actx.createOscillator(); o3.type = 'triangle'; o3.frequency.value = f; o3.detune.value = 4;
+  const o3g = actx.createGain(); o3g.gain.value = .25;
+  const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = bright;
+  const g = actx.createGain();
+  const end = t + dur * SPB + 1.2;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vel, t + .015);
+  g.gain.exponentialRampToValueAtTime(vel * .45, t + .5);
+  g.gain.exponentialRampToValueAtTime(.0001, end);
+  o1.connect(lp); o2.connect(o2g).connect(lp); o3.connect(o3g).connect(lp); lp.connect(g);
+  out(g, .85, .35);
+  [o1,o2,o3].forEach(o=>{ o.start(t); o.stop(end + .05); });
+}
+
+function pad(t, ms, dur){
+  const len = dur * SPB, lp = actx.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 650;
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.03, t + .9);
+  g.gain.setValueAtTime(.03, t + len - .1);
+  g.gain.linearRampToValueAtTime(0, t + len + .8);
+  ms.forEach(m=>{
+    const o = actx.createOscillator(); o.type = 'triangle';
+    o.frequency.value = mtof(m); o.connect(lp); o.start(t); o.stop(t + len + .9);
+  });
+  lp.connect(g); out(g, .7, .4);
+}
+
+function bass(t, m, dur){
+  const o = actx.createOscillator(); o.type = 'sine'; o.frequency.value = mtof(m);
+  const g = actx.createGain(), len = dur * SPB;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.12, t + .04);
+  g.gain.exponentialRampToValueAtTime(.04, t + len);
+  g.gain.linearRampToValueAtTime(0, t + len + .25);
+  o.connect(g); out(g, 1, 0);
+  o.start(t); o.stop(t + len + .3);
+}
+
+// 화음 안의 음으로만 울리는 작은 오르골 소리
+function chime(t, ms){
+  const m = ms[Math.floor(Math.random()*ms.length)] + 24;
+  const o = actx.createOscillator(); o.type = 'sine'; o.frequency.value = mtof(m);
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(.025, t + .01);
+  g.gain.exponentialRampToValueAtTime(.0001, t + 1.6);
+  o.connect(g); out(g, .5, .5);
+  o.start(t); o.stop(t + 1.7);
+}
+
+function play(ev, t){
+  switch(ev.type){
+    case 'mel':   epiano(t, ev.m, ev.dur, .17, 2200); break;
+    case 'arp':   epiano(t, ev.m, ev.dur, ev.v, 1300); break;
+    case 'pad':   pad(t, ev.ms, ev.dur); break;
+    case 'bass':  bass(t, ev.m, ev.dur); break;
+    case 'chime': if(Math.random() < ev.p) chime(t, ev.ms); break;
+  }
+}
+
+/* ---------- 모닥불 ---------- */
+function startFireBed(s, t){
+  // 낮게 웅웅거리는 불길
+  const rumble = actx.createBufferSource(); rumble.buffer = brownBuf; rumble.loop = true;
+  const rlp = actx.createBiquadFilter(); rlp.type = 'lowpass'; rlp.frequency.value = 350;
+  const rg = actx.createGain(); rg.gain.value = .09;
+  rumble.connect(rlp).connect(rg).connect(s.fire);
+  // 살짝 일렁이는 쉬익 소리
+  const hiss = actx.createBufferSource(); hiss.buffer = noiseBuf; hiss.loop = true;
+  const hbp = actx.createBiquadFilter(); hbp.type = 'bandpass'; hbp.frequency.value = 2500; hbp.Q.value = .6;
+  const hg = actx.createGain(); hg.gain.value = .006;
+  const lfo = actx.createOscillator(); lfo.frequency.value = .17;
+  const lfoG = actx.createGain(); lfoG.gain.value = .004;
+  lfo.connect(lfoG).connect(hg.gain);
+  hiss.connect(hbp).connect(hg).connect(s.fire);
+  [rumble, hiss, lfo].forEach(n=>n.start(t));
+  s.fireNodes = [rumble, hiss, lfo];
+}
+
+function crackle(t){
+  const src = actx.createBufferSource(); src.buffer = noiseBuf;
+  const bp = actx.createBiquadFilter(); bp.type = 'bandpass';
+  bp.frequency.value = 1200 + Math.random()*4500; bp.Q.value = 1 + Math.random()*3;
+  const g = actx.createGain();
+  const big = Math.random() < .15;
+  const vol = big ? .12 + Math.random()*.1 : .02 + Math.random()*.06;
+  const len = big ? .03 + Math.random()*.05 : .006 + Math.random()*.02;
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(.0001, t + len);
+  const pan = actx.createStereoPanner ? actx.createStereoPanner() : null;
+  src.connect(bp).connect(g);
+  if(pan){ pan.pan.value = Math.random()*1.2 - .6; g.connect(pan).connect(session.fire); }
+  else g.connect(session.fire);
+  src.start(t, Math.random()*3, len + .02);
+}
+
+function scheduleFire(ahead){
+  while(nextCrackle < ahead){
+    crackle(nextCrackle);
+    // 가끔 타닥타닥 연달아 튀는 소리
+    if(Math.random() < .12){
+      for(let k=1;k<=2+Math.floor(Math.random()*4);k++) crackle(nextCrackle + k*(.02 + Math.random()*.06));
+    }
+    nextCrackle += -Math.log(1 - Math.random()) * .22;
+  }
+}
+
+function scheduler(){
+  const ahead = actx.currentTime + 1.5; // 백그라운드 탭에서도 끊기지 않도록 넉넉히
+  while(true){
+    const ev = EVENTS[evIdx];
+    const t = loopStart + (loopN * LOOP_BARS * BAR + ev.beat) * SPB;
+    if(t > ahead) break;
+    if(t >= actx.currentTime - .02) play(ev, t);
+    if(++evIdx >= EVENTS.length){ evIdx = 0; loopN++; }
+  }
+  scheduleFire(ahead);
+}
+
+function startBgm(){
+  if(!actx) initAudio();
+  actx.resume();
+  // 재생마다 새 세션 볼륨을 만들어, 끄고 바로 켜도 소리가 겹치지 않게
+  const dry = actx.createGain(), wet = actx.createGain(), fire = actx.createGain();
+  const fade = actx.createGain(), wetFade = actx.createGain();
+  dry.connect(fade); fire.connect(fade); wet.connect(wetFade).connect(reverb);
+  fade.connect(master);
+  const now = actx.currentTime;
+  [fade, wetFade].forEach(g=>{ g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(1, now + 2.5); });
+  session = {dry, wet, fire, fade, wetFade};
+  startFireBed(session, now);
+  loopStart = now + .6; loopN = 0; evIdx = 0; nextCrackle = now + .1;
+  clearInterval(timer); timer = setInterval(scheduler, 100); scheduler();
+  bgmOn = true; bgmBtn.classList.add('on'); $('#snow').classList.add('on');
+}
+
+function stopBgm(){
+  if(!session) return;
+  clearInterval(timer);
+  const s = session, now = actx.currentTime;
+  [s.fade, s.wetFade].forEach(g=>{
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(0, now + 1.2);
+  });
+  setTimeout(()=>{ s.fireNodes.forEach(n=>{ try{ n.stop(); }catch(e){} }); s.fade.disconnect(); s.wetFade.disconnect(); }, 1600);
+  session = null;
+  bgmOn = false; bgmBtn.classList.remove('on'); $('#snow').classList.remove('on');
+}
+
+const bgmBtn = $('#bgmBtn');
+function tip(msg){
+  const el = $('#bgmTip'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+bgmBtn.addEventListener('click', ()=>{
+  if(bgmOn){ userPaused = true; stopBgm(); tip('배경음악을 껐어요'); }
+  else { userPaused = false; startBgm(); tip('♪ 모닥불 곁의 서점'); }
+});
+
+// 눈송이
+(function(){
+  const box = $('#snow');
+  for(let i=0;i<28;i++){
+    const f = document.createElement('span'), s = 3 + Math.random()*5;
+    f.className = 'flake';
+    f.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;opacity:${.5+Math.random()*.5};`
+      + `animation-duration:${9+Math.random()*10}s;animation-delay:${-Math.random()*18}s`;
+    box.appendChild(f);
+  }
+})();
+
+/* ===================== 사용자의 인생 책 ===================== */
+const LIFE_KEY = 'cozy-bookstore-lifebooks';
+const esc = s => s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function loadLife(){ try{ return JSON.parse(localStorage.getItem(LIFE_KEY)) || []; }catch(e){ return []; } }
+function saveLife(list){ try{ localStorage.setItem(LIFE_KEY, JSON.stringify(list)); }catch(e){} }
+let lifeBooks = loadLife();
+
+function renderLife(){
+  const box = $('#lifeList');
+  if(!lifeBooks.length){ box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="lt">이 서가에 꽂힌 인생 책 ${lifeBooks.length}권</div>` +
+    lifeBooks.slice().reverse().map(b=>`
+      <div class="life-item">
+        <b>『${esc(b.t)}』</b>${b.a ? ` <span>· ${esc(b.a)}</span>` : ''}
+        ${b.w ? `<q>${esc(b.w)}</q>` : ''}
+      </div>`).join('');
+}
+
+function resetLifeForm(){
+  $('.life').classList.remove('done');
+  ['#lifeTitle','#lifeAuthor','#lifeWhy'].forEach(id=>{ $(id).value = ''; });
+}
+
+// <form> 제출은 미리보기 화면(샌드박스) 등에서 막힐 수 있어 버튼 클릭으로 직접 처리
+function submitLife(){
+  const titleEl = $('#lifeTitle');
+  const t = titleEl.value.trim();
+  if(!t){
+    titleEl.classList.remove('shake'); void titleEl.offsetWidth; titleEl.classList.add('shake');
+    titleEl.placeholder = '책 제목을 먼저 적어 주세요';
+    titleEl.focus();
+    return;
+  }
+  const entry = {t, a:$('#lifeAuthor').value.trim(), w:$('#lifeWhy').value.trim()};
+  lifeBooks.push(entry); saveLife(lifeBooks);
+  $('#lifeThanks').innerHTML =
+    `『${esc(t)}』, 소중한 책을 알려 주셔서 고마워요.<br>서가 맨 앞자리에 꽂아 둘게요 📚` +
+    `<button class="life-again" type="button" id="lifeAgain">한 권 더 추천하기</button>`;
+  $('#lifeAgain').addEventListener('click', ()=>{ resetLifeForm(); $('#lifeTitle').focus(); });
+  $('.life').classList.add('done');
+  renderLife();
+  $('.life').scrollIntoView({behavior:'smooth', block:'center'});
+}
+$('#lifeSubmit').addEventListener('click', submitLife);
+['#lifeTitle','#lifeAuthor'].forEach(id=>{
+  $(id).addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.isComposing){ e.preventDefault(); submitLife(); } });
+});
+renderLife();
+
+$('#wishFab').addEventListener('click', openSheet);
+$('#sheetClose').addEventListener('click', closeSheet);
+$('#sheetBg').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSheet(); });
+updateWishCount();
+
+/* ===================== 이벤트 ===================== */
+$('#startBtn').addEventListener('click',()=>{
+  // 시작하기를 누를 때 자동으로 음악 시작 (브라우저 자동재생 정책 때문에 클릭 시점에 재생)
+  if(!bgmOn && !userPaused) startBgm();
+  step = 0; answers = {};
+  renderQuestion(0);
+  showScreen('quiz');
+});
+$('#backBtn').addEventListener('click',()=>{
+  if(step>0){ step--; renderQuestion(-1); }
+});
+$('#retryBtn').addEventListener('click',()=>{
+  resetLifeForm();
+  step = 0; answers = {};
+  showScreen('start');
+});
+
+/* 시작 화면 책장 장식 */
+(function(){
+  const picks = BOOKS.slice(0,11);
+  $('#shelf').innerHTML = picks.map((b,i)=>{
+    const h = 70 + ((i*37)%45);
+    return `<div class="spine" style="height:${h}px;background:${b.c};animation-delay:${i*.25}s"></div>`;
+  }).join('');
+})();
+
+</script>
+</body>
+</html>
